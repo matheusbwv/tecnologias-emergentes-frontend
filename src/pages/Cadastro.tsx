@@ -28,11 +28,11 @@ export function Cadastro() {
   }
 
   return (
-    <section className="page">
-      <h1>Cadastro</h1>
+    <section className="page form-page">
+      <h1>Adesão de paciente</h1>
       <p className="muted">
-        Informe seus dados. O sistema calcula seu acesso a partir de profissão,
-        renda e CEP.
+        Em poucos minutos você ativa seu cartão digital e recebe acesso ao
+        portal clínico da Atlas Saúde.
       </p>
 
       <form className="form" onSubmit={handleSubmit}>
@@ -61,7 +61,7 @@ export function Cadastro() {
         </label>
 
         <label className="field">
-          <span>Renda mensal (R$)</span>
+          <span>Renda mensal aproximada (R$)</span>
           <input
             type="number"
             min="0"
@@ -73,7 +73,7 @@ export function Cadastro() {
         </label>
 
         <label className="field">
-          <span>CEP</span>
+          <span>CEP residencial</span>
           <input
             type="text"
             required
@@ -83,7 +83,7 @@ export function Cadastro() {
           />
         </label>
 
-        <button type="submit">Cadastrar e ver meu acesso</button>
+        <button type="submit">Concluir adesão</button>
       </form>
     </section>
   )

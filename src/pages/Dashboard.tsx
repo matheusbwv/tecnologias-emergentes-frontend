@@ -35,8 +35,8 @@ export function Dashboard() {
         <div>
           <h1>Olá, {user.nome.split(' ')[0]}</h1>
           <p className="muted">
-            Plano <strong>{rotuloClasse(user.userClass)}</strong> · Classe{' '}
-            {user.userClass}
+            Plano <strong>Atlas {rotuloClasse(user.userClass)}</strong> ·
+            Carteirinha #{user.id.slice(0, 8).toUpperCase()}
           </p>
         </div>
         <div className="dashboard-actions">
@@ -81,7 +81,7 @@ export function Dashboard() {
 
       {vip ? (
         <div className="card card-vip card-vip-hero">
-          <h2>Diagnóstico de IA</h2>
+          <h2>Laudo com inteligência diagnóstica</h2>
           <p>
             <strong>{diagnosticoMock.resumo}</strong>
           </p>
@@ -94,25 +94,25 @@ export function Dashboard() {
             <em>Recomendação:</em> {diagnosticoMock.recomendacao}
           </p>
           <button type="button" className="btn-vip">
-            Agendar vaga prioritária com 1 clique
+            Agendar consulta prioritária
           </button>
         </div>
       ) : (
         <PaywallCard
-          titulo="Diagnóstico de IA bloqueado"
-          descricao="A análise instantânea do hemograma por IA está disponível apenas para o plano VIP. Você ainda pode buscar interpretação manual em clínicas conveniadas."
+          titulo="Laudo por inteligência diagnóstica"
+          descricao="A análise instantânea do hemograma por IA está incluída no plano Atlas Premium. No plano Essencial, o laudo é emitido pelo médico responsável em até 72h."
         />
       )}
 
       {!vip && (
         <div className="card card-base">
-          <h2>Próximo passo</h2>
+          <h2>Próxima consulta</h2>
           <p>
-            Para agendar uma consulta, entre na lista de espera. A previsão
-            atual é de <strong>14 a 28 dias</strong>.
+            Sua solicitação foi registrada na agenda padrão. Previsão atual de
+            atendimento: <strong>14 a 28 dias</strong>.
           </p>
           <button type="button" className="btn-secondary">
-            Entrar na fila padrão
+            Confirmar fila padrão
           </button>
         </div>
       )}
