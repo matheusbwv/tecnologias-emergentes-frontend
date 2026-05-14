@@ -2,7 +2,6 @@ import { Navigate } from 'react-router-dom'
 import { useUser } from '@/hooks/useUser'
 import { temAcessoIA, rotuloClasse } from '@/services/userClass'
 import { PriorityBadge } from '@/components/PriorityBadge'
-import { PaywallCard } from '@/components/PaywallCard'
 import type { Hemograma } from '@/types'
 
 const hemogramaMock: Hemograma = {
@@ -79,7 +78,7 @@ export function Dashboard() {
         </dl>
       </div>
 
-      {vip ? (
+      {vip && (
         <div className="card card-vip card-vip-hero">
           <h2>Laudo com inteligência diagnóstica</h2>
           <p>
@@ -97,11 +96,6 @@ export function Dashboard() {
             Agendar consulta prioritária
           </button>
         </div>
-      ) : (
-        <PaywallCard
-          titulo="Laudo por inteligência diagnóstica"
-          descricao="A análise instantânea do hemograma por IA está incluída no plano Atlas Premium. No plano Essencial, o laudo é emitido pelo médico responsável em até 72h."
-        />
       )}
 
       {!vip && (

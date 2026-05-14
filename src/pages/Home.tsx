@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { HeartPulse, Sparkles, Lock, Calendar } from 'lucide-react'
+import { HeartPulse, Sparkles, Calendar } from 'lucide-react'
 
 export function Home() {
   return (
@@ -71,12 +71,20 @@ export function Home() {
             preserveAspectRatio="none"
           >
             <path
-              d="M0 30 L60 30 L75 30 L85 10 L95 50 L110 30 L150 30 L165 30 L175 18 L185 42 L200 30 L260 30 L320 30"
+              d="M0 30 C15 14 25 14 40 30 C55 46 65 46 80 30 C95 14 105 14 120 30 C135 46 145 46 160 30 C175 14 185 14 200 30 C215 46 225 46 240 30 C255 14 265 14 280 30 C295 46 305 46 320 30"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
+            />
+            <path
+              d="M40 18 L40 42 M80 18 L80 42 M120 18 L120 42 M160 18 L160 42 M200 18 L200 42 M240 18 L240 42 M280 18 L280 42"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+              opacity="0.45"
             />
           </svg>
           <div className="hero-card-cta">
@@ -93,10 +101,7 @@ export function Home() {
           <div className="hero-card-title base">Resultado de exame</div>
           <div className="hero-card-line w80 base" />
           <div className="hero-card-line w50 base" />
-          <div className="hero-card-locked">
-            <Lock size={13} strokeWidth={2.2} />
-            Laudo por IA · disponível no Premium
-          </div>
+          <div className="hero-card-line w60 base" />
         </div>
       </aside>
     </section>
