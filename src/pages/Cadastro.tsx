@@ -21,6 +21,11 @@ export function Cadastro() {
   const [submitting, setSubmitting] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
+  function handleCep(raw: string) {
+    const digits = raw.replace(/\D/g, '').slice(0, 8)
+    setCep(digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits)
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setErro(null)
@@ -127,8 +132,11 @@ export function Cadastro() {
             type="text"
             required
             placeholder="00000-000"
+            maxLength={9}
+            minLength={9}
+            pattern="\d{5}-\d{3}"
             value={cep}
-            onChange={(e) => setCep(e.target.value)}
+            onChange={(e) => handleCep(e.target.value)}
           />
         </label>
 

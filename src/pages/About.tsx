@@ -1,4 +1,4 @@
-import { Brain, Hospital, UserRoundCheck, ShieldCheck, Check, Minus } from 'lucide-react'
+import { Brain, Hospital, UserRoundCheck, ShieldCheck, Check } from 'lucide-react'
 
 export function About() {
   return (
@@ -20,9 +20,9 @@ export function About() {
           loading="lazy"
         />
         <figcaption>
-          <span className="about-banner-tag">UNIDADE PAULISTA</span>
+          <span className="about-banner-tag">UNIDADE JUAZEIRO</span>
           <span className="about-banner-text">
-            Centro clínico integrado · São Paulo
+            Centro clínico integrado · Juazeiro do Norte
           </span>
         </figcaption>
       </figure>
@@ -46,9 +46,8 @@ export function About() {
           </span>
           <h3>Rede hospitalar integrada</h3>
           <p>
-            Parceria ativa com centros de referência em São Paulo, Rio de
-            Janeiro e Belo Horizonte, garantindo agendamento ágil em
-            especialidades e exames de imagem.
+            Parceria ativa com centros de referência em Juazeiro do Norte, Fortaleza
+            e Recife, garantindo agendamento ágil em especialidades e exames de imagem.
           </p>
         </article>
         <article className="about-feature">
@@ -116,14 +115,6 @@ export function About() {
             <li>
               <Check size={16} className="plan-icon" aria-hidden />
               Atendimento clínico geral em horário comercial
-            </li>
-            <li className="dim">
-              <Minus size={16} className="plan-icon" aria-hidden />
-              Laudo por IA — disponível no Premium
-            </li>
-            <li className="dim">
-              <Minus size={16} className="plan-icon" aria-hidden />
-              Concierge clínico — disponível no Premium
             </li>
           </ul>
         </article>

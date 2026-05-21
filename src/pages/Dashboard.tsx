@@ -3,7 +3,6 @@ import { useUser } from '@/hooks/useUser'
 import { useHemogram } from '@/hooks/useHemogram'
 import { temAcessoIA, rotuloClasse } from '@/services/userClass'
 import { PriorityBadge } from '@/components/PriorityBadge'
-import { PaywallCard } from '@/components/PaywallCard'
 
 function formatNumber(value: number) {
   return value.toLocaleString('pt-BR')
@@ -86,7 +85,7 @@ export function Dashboard() {
         )}
       </div>
 
-      {vip ? (
+      {vip && (
         <div className="card card-vip card-vip-hero">
           <h2>Laudo com inteligência diagnóstica</h2>
           {loading && <p className="muted">Aguardando análise da IA...</p>}
@@ -104,11 +103,6 @@ export function Dashboard() {
             Agendar consulta prioritária
           </button>
         </div>
-      ) : (
-        <PaywallCard
-          titulo="Laudo por inteligência diagnóstica"
-          descricao="A análise instantânea do hemograma por IA está incluída no plano Atlas Premium. No plano Essencial, o laudo é emitido pelo médico responsável em até 72h."
-        />
       )}
 
       {!vip && (
