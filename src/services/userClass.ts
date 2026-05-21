@@ -1,4 +1,4 @@
-import type { UserClass } from '@/types'
+import type { CustomerClassBack, UserClass } from '@/types'
 
 const PROFISSAO_PESOS: Record<string, number> = {
   medico: 100,
@@ -61,6 +61,10 @@ export function calcularClasse(
 
 export function temAcessoIA(classe: UserClass): boolean {
   return classe === 'A' || classe === 'B'
+}
+
+export function mapToBackendClass(classe: UserClass): CustomerClassBack {
+  return temAcessoIA(classe) ? 'PREMIUM' : 'STANDARD'
 }
 
 export function rotuloClasse(classe: UserClass): string {

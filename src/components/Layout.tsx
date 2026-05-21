@@ -16,6 +16,10 @@ export function Layout() {
         <nav className="nav">
           <Link to="/">Início</Link>
           <Link to="/dashboard">Meu plano</Link>
+          <Link to="/pacientes">Pacientes</Link>
+          <Link to="/hospitais">Hospitais</Link>
+          <Link to="/agenda">Agenda</Link>
+          <Link to="/exames">Exames</Link>
           <Link to="/sobre">A clínica</Link>
         </nav>
       </header>

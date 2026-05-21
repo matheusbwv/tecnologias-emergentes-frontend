@@ -1,33 +1,23 @@
 import { Navigate } from 'react-router-dom'
 import { useUser } from '@/hooks/useUser'
+import { useHemogram } from '@/hooks/useHemogram'
 import { temAcessoIA, rotuloClasse } from '@/services/userClass'
 import { PriorityBadge } from '@/components/PriorityBadge'
 import { PaywallCard } from '@/components/PaywallCard'
-import type { Hemograma } from '@/types'
 
-const hemogramaMock: Hemograma = {
-  hemoglobina: 12.5,
-  leucocitos: 6500,
-  hematocrito: 38,
-  plaquetas: 220000,
-  timestamp: new Date().toISOString(),
-}
-
-const diagnosticoMock = {
-  resumo:
-    'Hemograma compatível com leve anemia ferropriva. Indícios de fadiga sistêmica.',
-  alertas: ['Hemoglobina abaixo da referência (13.5 g/dL)'],
-  recomendacao:
-    'Solicitar consulta com clínico geral em até 7 dias e avaliar reposição de ferro.',
+function formatNumber(value: number) {
+  return value.toLocaleString('pt-BR')
 }
 
 export function Dashboard() {
   const { user, logout } = useUser()
+  const { data: hemograma, loading, error } = useHemogram(user?.customerId)
 
   if (!user) return <Navigate to="/cadastro" replace />
 
   const vip = temAcessoIA(user.userClass)
   const tema = vip ? 'theme-vip' : 'theme-base'
+  const observation = hemograma?.observation?.trim() || null
 
   return (
     <section className={`page dashboard ${tema}`}>
@@ -54,45 +44,62 @@ export function Dashboard() {
 
       <div className={`card ${vip ? 'card-vip' : 'card-base'}`}>
         <h2>Resultado de hemograma</h2>
-        <p className="muted">
-          Coletado em{' '}
-          {new Date(hemogramaMock.timestamp).toLocaleString('pt-BR')}
-        </p>
 
-        <dl className="exame-grid">
-          <div>
-            <dt>Hemoglobina</dt>
-            <dd>{hemogramaMock.hemoglobina} g/dL</dd>
-          </div>
-          <div>
-            <dt>Leucócitos</dt>
-            <dd>{hemogramaMock.leucocitos.toLocaleString('pt-BR')} /mm³</dd>
-          </div>
-          <div>
-            <dt>Hematócrito</dt>
-            <dd>{hemogramaMock.hematocrito}%</dd>
-          </div>
-          <div>
-            <dt>Plaquetas</dt>
-            <dd>{hemogramaMock.plaquetas.toLocaleString('pt-BR')} /mm³</dd>
-          </div>
-        </dl>
+        {loading && <p className="muted">Carregando exame mais recente...</p>}
+        {error && !loading && (
+          <p role="alert" className="form-error">
+            {error}
+          </p>
+        )}
+
+        {hemograma && !loading && !error && (
+          <>
+            <p className="muted">Exame #{hemograma.examId} · paciente {hemograma.customerId}</p>
+            <dl className="exame-grid">
+              <div>
+                <dt>Hemoglobina</dt>
+                <dd>
+                  {hemograma.examData.erythrogram.hemoglobin.value}{' '}
+                  {hemograma.examData.erythrogram.hemoglobin.unit}
+                </dd>
+              </div>
+              <div>
+                <dt>Hemácias (RBC)</dt>
+                <dd>
+                  {hemograma.examData.erythrogram.rbc.value}{' '}
+                  {hemograma.examData.erythrogram.rbc.unit}
+                </dd>
+              </div>
+              <div>
+                <dt>Leucócitos</dt>
+                <dd>
+                  {formatNumber(hemograma.examData.leukogram.wbc_total.value)}{' '}
+                  {hemograma.examData.leukogram.wbc_total.unit}
+                </dd>
+              </div>
+              <div>
+                <dt>Plaquetas</dt>
+                <dd>{formatNumber(hemograma.examData.platelets.count)} /µL</dd>
+              </div>
+            </dl>
+          </>
+        )}
       </div>
 
       {vip ? (
         <div className="card card-vip card-vip-hero">
           <h2>Laudo com inteligência diagnóstica</h2>
-          <p>
-            <strong>{diagnosticoMock.resumo}</strong>
-          </p>
-          <ul className="alerta-lista">
-            {diagnosticoMock.alertas.map((a) => (
-              <li key={a}>{a}</li>
-            ))}
-          </ul>
-          <p>
-            <em>Recomendação:</em> {diagnosticoMock.recomendacao}
-          </p>
+          {loading && <p className="muted">Aguardando análise da IA...</p>}
+          {!loading && observation && (
+            <p className="laudo-ia" style={{ whiteSpace: 'pre-line' }}>
+              {observation}
+            </p>
+          )}
+          {!loading && !observation && !error && (
+            <p className="muted">
+              O laudo automatizado ainda não está disponível para este exame.
+            </p>
+          )}
           <button type="button" className="btn-vip">
             Agendar consulta prioritária
           </button>

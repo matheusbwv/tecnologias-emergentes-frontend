@@ -1,30 +1,69 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '@/hooks/useUser'
-import { PROFISSOES, calcularClasse } from '@/services/userClass'
+import { PROFISSOES, calcularClasse, mapToBackendClass } from '@/services/userClass'
+import { createCustomer } from '@/services/customer'
+import { ApiRequestError } from '@/services/api'
 
 export function Cadastro() {
   const { setUser } = useUser()
   const navigate = useNavigate()
 
   const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
   const [profissao, setProfissao] = useState(PROFISSOES[0])
   const [renda, setRenda] = useState('')
   const [cep, setCep] = useState('')
+  const [cidade, setCidade] = useState('')
+  const [rua, setRua] = useState('')
+  const [numero, setNumero] = useState('')
 
-  function handleSubmit(e: FormEvent) {
+  const [submitting, setSubmitting] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
+
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    setErro(null)
+    setSubmitting(true)
+
     const rendaNum = Number.parseFloat(renda) || 0
     const userClass = calcularClasse(profissao, rendaNum, cep)
-    setUser({
-      id: crypto.randomUUID(),
-      nome,
-      profissao,
-      renda: rendaNum,
-      cep,
-      userClass,
-    })
-    navigate('/dashboard')
+    const numeroNum = Number.parseInt(numero, 10) || 0
+
+    try {
+      const customer = await createCustomer({
+        name: nome,
+        email,
+        customerClass: mapToBackendClass(userClass),
+        address: {
+          latitude: 0,
+          longitude: 0,
+          city: cidade,
+          street: rua,
+          houseNumber: numeroNum,
+        },
+      })
+
+      setUser({
+        id: crypto.randomUUID(),
+        customerId: customer.id,
+        nome,
+        email,
+        profissao,
+        renda: rendaNum,
+        cep,
+        userClass,
+      })
+      navigate('/dashboard')
+    } catch (err) {
+      const msg =
+        err instanceof ApiRequestError
+          ? err.message
+          : 'Não foi possível concluir a adesão. Tente novamente.'
+      setErro(msg)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -43,6 +82,16 @@ export function Cadastro() {
             required
             value={nome}
             onChange={(e) => setNome(e.target.value)}
+          />
+        </label>
+
+        <label className="field">
+          <span>E-mail</span>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </label>
 
@@ -83,7 +132,46 @@ export function Cadastro() {
           />
         </label>
 
-        <button type="submit">Concluir adesão</button>
+        <label className="field">
+          <span>Cidade</span>
+          <input
+            type="text"
+            required
+            value={cidade}
+            onChange={(e) => setCidade(e.target.value)}
+          />
+        </label>
+
+        <label className="field">
+          <span>Rua</span>
+          <input
+            type="text"
+            required
+            value={rua}
+            onChange={(e) => setRua(e.target.value)}
+          />
+        </label>
+
+        <label className="field">
+          <span>Número</span>
+          <input
+            type="number"
+            min="0"
+            required
+            value={numero}
+            onChange={(e) => setNumero(e.target.value)}
+          />
+        </label>
+
+        {erro && (
+          <p role="alert" className="form-error">
+            {erro}
+          </p>
+        )}
+
+        <button type="submit" disabled={submitting}>
+          {submitting ? 'Enviando...' : 'Concluir adesão'}
+        </button>
       </form>
     </section>
   )

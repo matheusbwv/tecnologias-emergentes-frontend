@@ -1,29 +1,46 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
+import type { ApiErrorResponse } from '@/types'
 
-const baseURL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
+const baseURL =
+  import.meta.env.VITE_API_URL ??
+  'https://stark-cliffs-43839-e9065399f0e4.herokuapp.com/'
 
 export const api = axios.create({
   baseURL,
-  timeout: 10000,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+export class ApiRequestError extends Error {
+  status?: number
+  path?: string
+  raw?: ApiErrorResponse
+
+  constructor(message: string, status?: number, path?: string, raw?: ApiErrorResponse) {
+    super(message)
+    this.name = 'ApiRequestError'
+    this.status = status
+    this.path = path
+    this.raw = raw
   }
-  return config
-})
+}
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
+  (error: AxiosError<ApiErrorResponse>) => {
+    const body = error.response?.data
+    const status = error.response?.status
+
+    if (body && typeof body === 'object' && 'message' in body) {
+      return Promise.reject(
+        new ApiRequestError(body.message ?? error.message, status, body.path, body),
+      )
     }
-    return Promise.reject(error)
+
+    return Promise.reject(
+      new ApiRequestError(error.message || 'Erro de comunicação com o servidor.', status),
+    )
   },
 )
