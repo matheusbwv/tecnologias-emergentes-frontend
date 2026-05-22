@@ -5,7 +5,24 @@ import type {
   Page,
 } from '@/types'
 
+/** Modo offline para testar o front sem o back (VITE_USE_MOCK=true) */
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
+
+function mockCustomer(payload: CreateCustomerPayload): Customer {
+  return {
+    id: Math.floor(1000 + Math.random() * 9000),
+    name: payload.name,
+    email: payload.email,
+    customerClass: payload.customerClass,
+    address: { id: 1, ...payload.address },
+  }
+}
+
 export async function createCustomer(payload: CreateCustomerPayload): Promise<Customer> {
+  if (USE_MOCK) {
+    await new Promise((r) => setTimeout(r, 400))
+    return mockCustomer(payload)
+  }
   const { data } = await api.post<Customer>('/customer', payload)
   return data
 }

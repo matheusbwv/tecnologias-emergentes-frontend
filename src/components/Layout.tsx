@@ -11,17 +11,19 @@ export function Layout() {
     setMenuOpen(false)
   }, [location.pathname])
 
-  // Previne scroll do body quando o menu mobile está aberto
+  // Fecha o menu mobile ao rolar a página, com a animação normal de fechar
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
+    if (!menuOpen) return
+    const close = () => setMenuOpen(false)
+    window.addEventListener('scroll', close, { passive: true })
+    return () => window.removeEventListener('scroll', close)
   }, [menuOpen])
+
+  const isDashboard = location.pathname.startsWith('/dashboard')
 
   return (
     <div className="layout">
-      <header className="header">
+      <header className={`header ${isDashboard ? 'header-dark' : ''}`}>
         <Link to="/" className="brand" aria-label="Atlas Saúde — início">
           <span className="brand-icon" aria-hidden>
             <Stethoscope size={18} strokeWidth={2.4} />
@@ -63,10 +65,10 @@ export function Layout() {
           />
         )}
       </header>
-      <main className="main">
+      <main className={`main ${isDashboard ? 'main-flush' : ''}`}>
         <Outlet />
       </main>
-      <footer className="footer">
+      <footer className={`footer ${isDashboard ? 'footer-dark' : ''}`}>
         <small>
           © {new Date().getFullYear()} Atlas Saúde · Cuidado integrado, com
           inteligência diagnóstica.
