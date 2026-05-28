@@ -101,8 +101,8 @@ export function About() {
           </ul>
         </article>
         <article className="plan-card essencial">
-          <span className="plan-tag">PLANO ESSENCIAL</span>
-          <h3>Atlas Essencial</h3>
+          <span className="plan-tag">PLANO BÁSICO</span>
+          <h3>Atlas Básico</h3>
           <ul>
             <li>
               <Check size={16} className="plan-icon" aria-hidden />

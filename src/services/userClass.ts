@@ -73,7 +73,7 @@ export function rotuloClasse(classe: UserClass): string {
     B: 'VIP',
     C: 'Padrão',
     D: 'Básico',
-    E: 'Essencial',
+    E: 'Básico',
   }
   return rotulos[classe]
 }

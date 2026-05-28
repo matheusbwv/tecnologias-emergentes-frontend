@@ -16,6 +16,7 @@ import { useUser } from '@/hooks/useUser'
 import { useHemogram } from '@/hooks/useHemogram'
 import { temAcessoIA, rotuloClasse } from '@/services/userClass'
 import { PriorityBadge } from '@/components/PriorityBadge'
+import { GoogleAd } from '@/components/GoogleAd'
 import humanoidImg from '@/assets/humanoid.png'
 import type { HemogramResponseDTO, User } from '@/types'
 
@@ -372,27 +373,6 @@ function PremiumDashboard({ user, logout, hemograma, loading, error }: SubProps)
               </div>
 
               <div className="body-zoom-wrap">
-                {/* Flanco Esquerdo (Leituras Vitais) */}
-                <div className="vital-flank vital-flank-left">
-                  <div className={`vflank-card vital-status-${statusHb}`}>
-                    <div className="vflank-text">
-                      <small>Hemoglobina</small>
-                      <strong>{formatNumber(hemograma.examData.erythrogram.hemoglobin.value, 1)} {hemograma.examData.erythrogram.hemoglobin.unit}</strong>
-                    </div>
-                    <div className="vflank-line" style={{ background: `linear-gradient(90deg, rgba(255,255,255,0.06), ${C.red})` }} />
-                    <div className="vflank-dot" style={{ background: C.red, boxShadow: `0 0 10px ${C.red}` }} />
-                  </div>
-
-                  <div className={`vflank-card vital-status-${statusRbc}`}>
-                    <div className="vflank-text">
-                      <small>Hemácias</small>
-                      <strong>{formatNumber(hemograma.examData.erythrogram.rbc.value, 2)} {hemograma.examData.erythrogram.rbc.unit}</strong>
-                    </div>
-                    <div className="vflank-line" style={{ background: `linear-gradient(90deg, rgba(255,255,255,0.06), ${C.violet})` }} />
-                    <div className="vflank-dot" style={{ background: C.violet, boxShadow: `0 0 10px ${C.violet}` }} />
-                  </div>
-                </div>
-
                 {/* Palco do Corpo */}
                 <div className="body-stage">
                   <div className="body-ring body-ring-1" />
@@ -456,27 +436,6 @@ function PremiumDashboard({ user, logout, hemograma, loading, error }: SubProps)
                     <div className="vital-pin">
                       <div className="vital-pin-core" />
                       <div className="vital-pin-pulse" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Flanco Direito (Leituras Vitais) */}
-                <div className="vital-flank vital-flank-right">
-                  <div className={`vflank-card vital-status-${statusWbc}`}>
-                    <div className="vflank-dot" style={{ background: C.green, boxShadow: `0 0 10px ${C.green}` }} />
-                    <div className="vflank-line" style={{ background: `linear-gradient(90deg, ${C.green}, rgba(255,255,255,0.06))` }} />
-                    <div className="vflank-text">
-                      <small>Leucócitos</small>
-                      <strong>{formatNumber(hemograma.examData.leukogram.wbc_total.value, 0)} {hemograma.examData.leukogram.wbc_total.unit}</strong>
-                    </div>
-                  </div>
-
-                  <div className={`vflank-card vital-status-${statusPlt}`}>
-                    <div className="vflank-dot" style={{ background: C.gold, boxShadow: `0 0 10px ${C.gold}` }} />
-                    <div className="vflank-line" style={{ background: `linear-gradient(90deg, ${C.gold}, rgba(255,255,255,0.06))` }} />
-                    <div className="vflank-text">
-                      <small>Plaquetas</small>
-                      <strong>{formatNumber(hemograma.examData.platelets.count, 0)} /µL</strong>
                     </div>
                   </div>
                 </div>
@@ -588,91 +547,128 @@ function LockedCard({ title, hint }: { title: string; hint: string }) {
 
 function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps) {
   return (
-    <section className="page dashboard theme-base dashboard-standard">
-      <header className="dashboard-header">
-        <div>
-          <p className="muted">Plano Atlas {rotuloClasse(user.userClass)}</p>
-          <h1>Olá, {user.nome.split(' ')[0]}</h1>
-          <p className="muted">Carteirinha #{user.id.slice(0, 8).toUpperCase()}</p>
+    <section className="page dashboard theme-base dashboard-standard dashboard-standard-wide">
+      <div className="standard-shell">
+        <header className="dashboard-header">
+          <div>
+            <p className="muted">Plano Atlas {rotuloClasse(user.userClass)}</p>
+            <h1>Olá, {user.nome.split(' ')[0]}</h1>
+            <p className="muted">Carteirinha #{user.id.slice(0, 8).toUpperCase()}</p>
+          </div>
+          <div className="dashboard-actions">
+            <PriorityBadge userClass={user.userClass} />
+            <button type="button" className="btn-secondary" onClick={logout} aria-label="Sair">
+              Sair
+            </button>
+          </div>
+        </header>
+
+        <div className="standard-banner">
+          <strong>Fila padrão · 14 a 28 dias para próxima consulta</strong>
+          <span className="muted">
+            Atendimento garantido. Gráficos e análise por IA ficam disponíveis no plano Premium.
+          </span>
         </div>
-        <div className="dashboard-actions">
-          <PriorityBadge userClass={user.userClass} />
-          <button type="button" className="btn-secondary" onClick={logout} aria-label="Sair">
-            Sair
-          </button>
+
+        {/* Banner publicitário no topo (full-width) */}
+        <GoogleAd
+          slot="1111111111"
+          format="horizontal"
+          label="Anúncio · patrocinado pelo Google"
+          className="ad-slot-banner"
+        />
+
+        <div className="standard-grid">
+          <div className="standard-main">
+            {loading && <p className="muted">Carregando resultado...</p>}
+            {error && !loading && (
+              <p role="alert" className="form-error">
+                {error}
+              </p>
+            )}
+
+            {hemograma && !loading && !error && (
+              <div className="card card-base">
+                <h2>Resultado do hemograma</h2>
+                <p className="muted">Exame #{hemograma.examId}</p>
+                <dl className="exame-grid exame-grid-basic">
+                  <div>
+                    <dt>Hemoglobina</dt>
+                    <dd>
+                      {formatNumber(hemograma.examData.erythrogram.hemoglobin.value, 2)}{' '}
+                      {hemograma.examData.erythrogram.hemoglobin.unit}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Hemácias (RBC)</dt>
+                    <dd>
+                      {formatNumber(hemograma.examData.erythrogram.rbc.value, 2)}{' '}
+                      {hemograma.examData.erythrogram.rbc.unit}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Leucócitos</dt>
+                    <dd>
+                      {formatNumber(hemograma.examData.leukogram.wbc_total.value)}{' '}
+                      {hemograma.examData.leukogram.wbc_total.unit}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Plaquetas</dt>
+                    <dd>{formatNumber(hemograma.examData.platelets.count)} /µL</dd>
+                  </div>
+                </dl>
+                <p className="muted standard-disclaimer">
+                  Resultado emitido sem laudo automatizado. A interpretação clínica será feita pelo médico
+                  no momento da consulta.
+                </p>
+              </div>
+            )}
+
+            {/* Anúncio in-feed entre o resultado e os blocos bloqueados */}
+            <GoogleAd
+              slot="2222222222"
+              format="fluid"
+              label="Anúncio"
+              className="ad-slot-infeed"
+            />
+
+            <LockedCard
+              title="Gráficos de evolução clínica"
+              hint="Acompanhe a tendência dos seus exames ao longo do tempo no plano Premium."
+            />
+            <LockedCard
+              title="Laudo por inteligência artificial"
+              hint="Avaliação imediata do hemograma gerada pela Atlas IA está disponível no plano Premium."
+            />
+
+            <div className="card card-base">
+              <h2>Próxima consulta</h2>
+              <p>
+                Sua solicitação foi registrada na agenda padrão. Previsão atual de atendimento:{' '}
+                <strong>14 a 28 dias</strong>.
+              </p>
+              <button type="button" className="btn-secondary">
+                Confirmar fila padrão
+              </button>
+            </div>
+          </div>
+
+          <aside className="standard-sidebar">
+            <GoogleAd
+              slot="3333333333"
+              format="vertical"
+              label="Anúncio"
+              className="ad-slot-rail"
+            />
+            <GoogleAd
+              slot="4444444444"
+              format="rectangle"
+              label="Anúncio"
+              className="ad-slot-rail"
+            />
+          </aside>
         </div>
-      </header>
-
-      <div className="standard-banner">
-        <strong>Fila padrão · 14 a 28 dias para próxima consulta</strong>
-        <span className="muted">
-          Atendimento garantido. Gráficos e análise por IA ficam disponíveis no plano Premium.
-        </span>
-      </div>
-
-      {loading && <p className="muted">Carregando resultado...</p>}
-      {error && !loading && (
-        <p role="alert" className="form-error">
-          {error}
-        </p>
-      )}
-
-      {hemograma && !loading && !error && (
-        <div className="card card-base">
-          <h2>Resultado do hemograma</h2>
-          <p className="muted">Exame #{hemograma.examId}</p>
-          <dl className="exame-grid exame-grid-basic">
-            <div>
-              <dt>Hemoglobina</dt>
-              <dd>
-                {formatNumber(hemograma.examData.erythrogram.hemoglobin.value, 2)}{' '}
-                {hemograma.examData.erythrogram.hemoglobin.unit}
-              </dd>
-            </div>
-            <div>
-              <dt>Hemácias (RBC)</dt>
-              <dd>
-                {formatNumber(hemograma.examData.erythrogram.rbc.value, 2)}{' '}
-                {hemograma.examData.erythrogram.rbc.unit}
-              </dd>
-            </div>
-            <div>
-              <dt>Leucócitos</dt>
-              <dd>
-                {formatNumber(hemograma.examData.leukogram.wbc_total.value)}{' '}
-                {hemograma.examData.leukogram.wbc_total.unit}
-              </dd>
-            </div>
-            <div>
-              <dt>Plaquetas</dt>
-              <dd>{formatNumber(hemograma.examData.platelets.count)} /µL</dd>
-            </div>
-          </dl>
-          <p className="muted standard-disclaimer">
-            Resultado emitido sem laudo automatizado. A interpretação clínica será feita pelo médico no
-            momento da consulta.
-          </p>
-        </div>
-      )}
-
-      <LockedCard
-        title="Gráficos de evolução clínica"
-        hint="Acompanhe a tendência dos seus exames ao longo do tempo no plano Premium."
-      />
-      <LockedCard
-        title="Laudo por inteligência artificial"
-        hint="Avaliação imediata do hemograma gerada pela Atlas IA está disponível no plano Premium."
-      />
-
-      <div className="card card-base">
-        <h2>Próxima consulta</h2>
-        <p>
-          Sua solicitação foi registrada na agenda padrão. Previsão atual de atendimento:{' '}
-          <strong>14 a 28 dias</strong>.
-        </p>
-        <button type="button" className="btn-secondary">
-          Confirmar fila padrão
-        </button>
       </div>
     </section>
   )
