@@ -572,8 +572,8 @@ function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps
 
         {/* Banner publicitário no topo (full-width) */}
         <GoogleAd
-          slot="1111111111"
-          format="horizontal"
+          slot="1815090210"
+          format="auto"
           label="Anúncio · patrocinado pelo Google"
           className="ad-slot-banner"
         />
@@ -627,8 +627,8 @@ function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps
 
             {/* Anúncio in-feed entre o resultado e os blocos bloqueados */}
             <GoogleAd
-              slot="2222222222"
-              format="fluid"
+              slot="5562763539"
+              format="auto"
               label="Anúncio"
               className="ad-slot-infeed"
             />
@@ -656,14 +656,14 @@ function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps
 
           <aside className="standard-sidebar">
             <GoogleAd
-              slot="3333333333"
-              format="vertical"
+              slot="9721500398"
+              format="auto"
               label="Anúncio"
               className="ad-slot-rail"
             />
             <GoogleAd
-              slot="4444444444"
-              format="rectangle"
+              slot="1410245627"
+              format="auto"
               label="Anúncio"
               className="ad-slot-rail"
             />
