@@ -6039,3 +6039,132 @@ button:disabled {
     flex-direction: column;
   }
 }
+
+/* ===== MockAd: anúncios visuais enquanto a aprovação do AdSense não sai ===== */
+
+.mock-ad-body {
+  display: flex;
+  gap: 0.9rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 8px;
+  padding: 0.4rem;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.mock-ad-body:hover {
+  background: rgba(91, 108, 128, 0.06);
+  transform: translateY(-1px);
+}
+
+.mock-ad-media {
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--slate-soft);
+  border: 1px solid var(--slate-line);
+}
+
+.mock-ad-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mock-ad-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.mock-ad-advertiser {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  font-weight: 600;
+}
+
+.mock-ad-headline {
+  font-size: 1.02rem;
+  line-height: 1.25;
+  color: var(--clinic-ink);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.mock-ad-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-mute);
+}
+
+.mock-ad-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--teal);
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+  transition: gap 0.2s ease;
+}
+
+.mock-ad-body:hover .mock-ad-cta {
+  gap: 0.5rem;
+}
+
+/* Variante banner: imagem fica menor, texto à direita */
+.mock-ad-banner .mock-ad-body {
+  flex-direction: row;
+  align-items: center;
+}
+
+.mock-ad-banner .mock-ad-media {
+  width: 140px;
+  height: 80px;
+}
+
+/* Variante in-feed: card médio com imagem à esquerda */
+.mock-ad-infeed .mock-ad-body {
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.mock-ad-infeed .mock-ad-media {
+  width: 200px;
+  height: auto;
+  min-height: 140px;
+}
+
+/* Variante rail (sidebar): imagem no topo, texto embaixo (vertical) */
+.mock-ad-rail .mock-ad-body {
+  flex-direction: column;
+}
+
+.mock-ad-rail .mock-ad-media {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  height: auto;
+}
+
+@media (max-width: 600px) {
+  .mock-ad-banner .mock-ad-body,
+  .mock-ad-infeed .mock-ad-body {
+    flex-direction: column;
+  }
+  .mock-ad-banner .mock-ad-media,
+  .mock-ad-infeed .mock-ad-media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+  }
+}

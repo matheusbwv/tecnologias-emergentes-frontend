@@ -16,8 +16,11 @@ import { useUser } from '@/hooks/useUser'
 import { useHemogram } from '@/hooks/useHemogram'
 import { temAcessoIA, rotuloClasse } from '@/services/userClass'
 import { PriorityBadge } from '@/components/PriorityBadge'
-import { GoogleAd } from '@/components/GoogleAd'
+import { MockAd } from '@/components/MockAd'
 import humanoidImg from '@/assets/humanoid.png'
+
+// GoogleAd segue presente em components/GoogleAd.tsx e será religado quando
+// o AdSense aprovar o site. Por enquanto usamos <MockAd /> nos mesmos slots.
 import type { HemogramResponseDTO, User } from '@/types'
 
 /* ================================================================== */
@@ -571,12 +574,7 @@ function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps
         </div>
 
         {/* Banner publicitário no topo (full-width) */}
-        <GoogleAd
-          slot="1815090210"
-          format="auto"
-          label="Anúncio · patrocinado pelo Google"
-          className="ad-slot-banner"
-        />
+        <MockAd layout="banner" label="Patrocinado" className="ad-slot-banner" />
 
         <div className="standard-grid">
           <div className="standard-main">
@@ -626,12 +624,7 @@ function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps
             )}
 
             {/* Anúncio in-feed entre o resultado e os blocos bloqueados */}
-            <GoogleAd
-              slot="5562763539"
-              format="auto"
-              label="Anúncio"
-              className="ad-slot-infeed"
-            />
+            <MockAd layout="infeed" label="Anúncio" className="ad-slot-infeed" />
 
             <LockedCard
               title="Gráficos de evolução clínica"
@@ -655,18 +648,8 @@ function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps
           </div>
 
           <aside className="standard-sidebar">
-            <GoogleAd
-              slot="9721500398"
-              format="auto"
-              label="Anúncio"
-              className="ad-slot-rail"
-            />
-            <GoogleAd
-              slot="1410245627"
-              format="auto"
-              label="Anúncio"
-              className="ad-slot-rail"
-            />
+            <MockAd layout="rail" label="Anúncio" className="ad-slot-rail" />
+            <MockAd layout="rail" label="Anúncio" className="ad-slot-rail" />
           </aside>
         </div>
       </div>
