@@ -62,7 +62,7 @@ tecnologias-emergentes-frontend/
 │   │   ├── Layout.tsx             # Wrapper principal (header, nav, footer)
 │   │   ├── PriorityBadge.tsx      # Badge de tier do usuário (Crown / Clock)
 │   │   ├── PaywallCard.tsx        # Card de funcionalidade bloqueada
-│   │   └── GoogleAd.tsx           # Integração com Google AdSense
+│   │   └── GoogleAd.tsx           # Mock visual dos slots de anúncio do plano básico
 │   ├── hooks/
 │   │   ├── useUser.ts             # Estado do usuário via localStorage
 │   │   └── useHemogram.ts         # Busca de dados de hemograma
@@ -252,7 +252,7 @@ Tema claro com estética simples e profissional.
 **Conteúdo:**
 - Card com resultados brutos do hemograma
 - Banner informativo sobre tempo de espera (14–28 dias)
-- Slots de anúncio Google AdSense (banner, in-feed, lateral)
+- Slots de anúncio mockados (banner, in-feed, lateral) para simular a experiência do plano gratuito
 - Cards bloqueados (paywall) com CTA para upgrade Premium
 - Botão de confirmação da próxima consulta
 
@@ -352,11 +352,11 @@ Card de funcionalidade bloqueada para usuários Standard.
 
 ### `GoogleAd.tsx`
 
-Integração com Google AdSense.
+Mock visual dos slots de anúncio exibidos no plano básico.
 
-- Renderiza `<ins class="adsbygoogle">` com os parâmetros configurados
-- Fallback para placeholder visual caso o AdSense não carregue
-- Recebe `slot`, `format` e `style` via props
+- Renderiza um placeholder estilizado no lugar de um anúncio real
+- Serve para demonstrar a diferença de experiência entre o plano gratuito (com anúncios) e o Premium (sem anúncios)
+- Recebe `slot`, `format`, `label` e `style` via props para simular diferentes formatos
 
 ---
 
@@ -561,11 +561,7 @@ VITE_API_URL=https://stark-cliffs-43839-e9065399f0e4.herokuapp.com/
 # Ativa modo mock/offline para desenvolvimento frontend sem backend
 VITE_USE_MOCK=true
 
-# ID do publisher Google AdSense
-VITE_ADSENSE_CLIENT=ca-pub-XXXX...
-
-# Ativa veiculação de anúncios de teste (não conta impressões reais)
-VITE_ADSENSE_TEST=true
+# (Sem variáveis de anúncio: os slots do plano básico são mockados em GoogleAd.tsx)
 ```
 
 ---
@@ -628,6 +624,6 @@ O hook `useHemogram` em modo mock retorna um objeto estático com valores de hem
 
 Todos os modelos de domínio, respostas de API e props de componentes são tipados via `src/types/index.ts`. Sem uso de `any` nas interfaces públicas.
 
-### Integração Google AdSense
+### Mock de Anúncios do Plano Básico
 
-O componente `GoogleAd` renderiza o slot do AdSense com fallback para um placeholder visual estilizado, evitando layout shift quando os anúncios não carregam (usuários com bloqueador, por exemplo).
+O componente `GoogleAd` renderiza um placeholder visual estilizado no lugar de uma rede de anúncios real. A escolha por mock é deliberada: o projeto é acadêmico e o objetivo é apenas demonstrar visualmente a diferença entre o plano gratuito (com anúncios) e o plano Premium (sem anúncios), sem depender de credenciais de publisher nem de aprovação de rede de anúncios.
