@@ -11,23 +11,41 @@ export function Exames() {
   const [exams, setExams] = useState<Page<Exam> | null>(null)
   const [report, setReport] = useState<Page<ExamReportRow> | null>(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [examsError, setExamsError] = useState<string | null>(null)
+  const [reportError, setReportError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
-    setError(null)
-    try {
-      const [examsData, reportData] = await Promise.all([
-        listExams(0, 15),
-        getNormalExamsReport(0, 15),
-      ])
-      setExams(examsData)
-      setReport(reportData)
-    } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Erro ao carregar exames.')
-    } finally {
-      setLoading(false)
+    setExamsError(null)
+    setReportError(null)
+
+    // allSettled: uma seção que falha não derruba a outra.
+    const [examsResult, reportResult] = await Promise.allSettled([
+      listExams(0, 15),
+      getNormalExamsReport(0, 15),
+    ])
+
+    if (examsResult.status === 'fulfilled') {
+      setExams(examsResult.value)
+    } else {
+      setExams(null)
+      setExamsError(
+        examsResult.reason instanceof ApiRequestError
+          ? examsResult.reason.message
+          : 'Não foi possível carregar os exames.',
+      )
     }
+
+    if (reportResult.status === 'fulfilled') {
+      setReport(reportResult.value)
+    } else {
+      // O relatório é secundário: se estiver indisponível, mostramos um aviso
+      // discreto em vez de quebrar a página.
+      setReport(null)
+      setReportError('Relatório indisponível no momento.')
+    }
+
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -42,17 +60,18 @@ export function Exames() {
         dentro da faixa de referência.
       </p>
 
-      {error && (
-        <p role="alert" className="form-error">
-          {error}
-        </p>
-      )}
-
       <div className="card">
         <h2>Todos os exames</h2>
         {loading && <p className="muted">Carregando...</p>}
-        {exams && !loading && exams.empty && <p className="muted">Sem exames.</p>}
-        {exams && !loading && !exams.empty && (
+        {!loading && examsError && (
+          <p role="alert" className="form-error">
+            {examsError}
+          </p>
+        )}
+        {!loading && !examsError && exams && exams.empty && (
+          <p className="muted">Nenhum exame realizado ainda.</p>
+        )}
+        {!loading && !examsError && exams && !exams.empty && (
           <table className="data-table">
             <thead>
               <tr>
@@ -86,8 +105,14 @@ export function Exames() {
 
       <div className="card">
         <h2>Relatório de hemogramas normais</h2>
-        {report && report.empty && <p className="muted">Sem dados no relatório.</p>}
-        {report && !report.empty && (
+        {loading && <p className="muted">Carregando...</p>}
+        {!loading && reportError && <p className="muted">{reportError}</p>}
+        {!loading && !reportError && report && report.empty && (
+          <p className="muted">
+            Nenhum hemograma dentro da faixa de referência por enquanto.
+          </p>
+        )}
+        {!loading && !reportError && report && !report.empty && (
           <table className="data-table">
             <thead>
               <tr>

@@ -27,6 +27,8 @@ export function Agenda() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [schedulesError, setSchedulesError] = useState<string | null>(null)
+  const [reportError, setReportError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const [serviceCode, setServiceCode] = useState('1001')
@@ -37,24 +39,52 @@ export function Agenda() {
   const loadAll = useCallback(async () => {
     setLoading(true)
     setError(null)
-    try {
-      const [schedulesData, reportData, customersData, hospitalsData] = await Promise.all([
+    setSchedulesError(null)
+    setReportError(null)
+
+    // allSettled: cada bloco da tela carrega de forma independente. Assim, um
+    // relatório indisponível não impede ver os agendamentos nem usar o formulário.
+    const [schedulesResult, reportResult, customersResult, hospitalsResult] =
+      await Promise.allSettled([
         listSchedules(0, 10),
         getSchedulesReport(0, 10),
         listCustomers(0, 50),
         listHospitals(0, 50),
       ])
-      setSchedules(schedulesData)
-      setReport(reportData)
-      setCustomers(customersData.content)
-      setHospitals(hospitalsData.content)
-      if (!customerId && customersData.content[0]) setCustomerId(customersData.content[0].id)
-      if (!hospitalId && hospitalsData.content[0]) setHospitalId(hospitalsData.content[0].id)
-    } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Erro ao carregar agenda.')
-    } finally {
-      setLoading(false)
+
+    if (schedulesResult.status === 'fulfilled') {
+      setSchedules(schedulesResult.value)
+    } else {
+      setSchedules(null)
+      setSchedulesError(
+        schedulesResult.reason instanceof ApiRequestError
+          ? schedulesResult.reason.message
+          : 'Não foi possível carregar os agendamentos.',
+      )
     }
+
+    if (reportResult.status === 'fulfilled') {
+      setReport(reportResult.value)
+    } else {
+      setReport(null)
+      setReportError('Relatório indisponível no momento.')
+    }
+
+    if (customersResult.status === 'fulfilled') {
+      setCustomers(customersResult.value.content)
+      if (!customerId && customersResult.value.content[0]) {
+        setCustomerId(customersResult.value.content[0].id)
+      }
+    }
+
+    if (hospitalsResult.status === 'fulfilled') {
+      setHospitals(hospitalsResult.value.content)
+      if (!hospitalId && hospitalsResult.value.content[0]) {
+        setHospitalId(hospitalsResult.value.content[0].id)
+      }
+    }
+
+    setLoading(false)
   }, [customerId, hospitalId])
 
   useEffect(() => {
@@ -162,10 +192,18 @@ export function Agenda() {
       <div className="card">
         <h2>Agendamentos registrados</h2>
         {loading && <p className="muted">Carregando...</p>}
-        {schedules && !loading && schedules.empty && (
-          <p className="muted">Nenhum agendamento ainda.</p>
+        {!loading && schedulesError && (
+          <p role="alert" className="form-error">
+            {schedulesError}
+          </p>
         )}
-        {schedules && !loading && !schedules.empty && (
+        {!loading && !schedulesError && schedules && schedules.empty && (
+          <p className="muted">
+            Nenhum agendamento registrado ainda. Use o formulário acima para vincular
+            um paciente a um hospital.
+          </p>
+        )}
+        {!loading && !schedulesError && schedules && !schedules.empty && (
           <table className="data-table">
             <thead>
               <tr>
@@ -193,8 +231,12 @@ export function Agenda() {
 
       <div className="card">
         <h2>Relatório unificado (ordenado por data)</h2>
-        {report && report.empty && <p className="muted">Sem dados.</p>}
-        {report && !report.empty && (
+        {loading && <p className="muted">Carregando...</p>}
+        {!loading && reportError && <p className="muted">{reportError}</p>}
+        {!loading && !reportError && report && report.empty && (
+          <p className="muted">Nenhum agendamento para exibir no relatório.</p>
+        )}
+        {!loading && !reportError && report && !report.empty && (
           <table className="data-table">
             <thead>
               <tr>
