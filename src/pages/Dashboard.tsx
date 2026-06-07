@@ -14,11 +14,12 @@ import {
 } from 'recharts'
 import { useUser } from '@/hooks/useUser'
 import { useHemogram } from '@/hooks/useHemogram'
+import { useLatestSchedule } from '@/hooks/useLatestSchedule'
 import { temAcessoIA, rotuloClasse } from '@/services/userClass'
 import { PriorityBadge } from '@/components/PriorityBadge'
 import { GoogleAd } from '@/components/GoogleAd'
 import humanoidImg from '@/assets/humanoid.png'
-import type { HemogramResponseDTO, User } from '@/types'
+import type { AutoScheduleResponse, HemogramResponseDTO, User } from '@/types'
 
 /* ================================================================== */
 /* Helpers                                                             */
@@ -118,13 +119,28 @@ function ChartTooltip({
 export function Dashboard() {
   const { user, logout } = useUser()
   const { data: hemograma, loading, error } = useHemogram(user?.customerId)
+  const { data: proximaConsulta } = useLatestSchedule(user?.customerId)
 
   if (!user) return <Navigate to="/cadastro" replace />
 
   return temAcessoIA(user.userClass) ? (
-    <PremiumDashboard user={user} logout={logout} hemograma={hemograma} loading={loading} error={error} />
+    <PremiumDashboard
+      user={user}
+      logout={logout}
+      hemograma={hemograma}
+      loading={loading}
+      error={error}
+      proximaConsulta={proximaConsulta}
+    />
   ) : (
-    <StandardDashboard user={user} logout={logout} hemograma={hemograma} loading={loading} error={error} />
+    <StandardDashboard
+      user={user}
+      logout={logout}
+      hemograma={hemograma}
+      loading={loading}
+      error={error}
+      proximaConsulta={proximaConsulta}
+    />
   )
 }
 
@@ -134,6 +150,16 @@ type SubProps = {
   hemograma: HemogramResponseDTO | null
   loading: boolean
   error: string | null
+  proximaConsulta: AutoScheduleResponse | null
+}
+
+function formatScheduleDate(iso: string): string {
+  return new Date(iso).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 /* ================================================================== */
@@ -142,7 +168,7 @@ type SubProps = {
 
 const MESES = ['Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai']
 
-function PremiumDashboard({ user, logout, hemograma, loading, error }: SubProps) {
+function PremiumDashboard({ user, logout, hemograma, loading, error, proximaConsulta }: SubProps) {
   const [now, setNow] = useState(new Date())
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30000)
@@ -463,8 +489,17 @@ function PremiumDashboard({ user, logout, hemograma, loading, error }: SubProps)
                 ) : (
                   <p className="muted" style={{ fontSize: '0.86rem' }}>Laudo sendo gerado…</p>
                 )}
+                {proximaConsulta && (
+                  <p
+                    className="muted"
+                    style={{ fontSize: '0.78rem', marginTop: '0.55rem' }}
+                  >
+                    Consulta prioritária agendada em{' '}
+                    <strong>{proximaConsulta.hospitalName}</strong> · {formatScheduleDate(proximaConsulta.scheduledAt)}
+                  </p>
+                )}
                 <button type="button" className="btn-gold ai-side-btn" style={{ padding: '0.65rem 1.2rem', fontSize: '0.86rem' }}>
-                  Agendar consulta prioritária
+                  {proximaConsulta ? 'Ver detalhes da consulta' : 'Agendar consulta prioritária'}
                 </button>
               </section>
 
@@ -545,7 +580,7 @@ function LockedCard({ title, hint }: { title: string; hint: string }) {
   )
 }
 
-function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps) {
+function StandardDashboard({ user, logout, hemograma, loading, error, proximaConsulta }: SubProps) {
   return (
     <section className="page dashboard theme-base dashboard-standard dashboard-standard-wide">
       <div className="standard-shell">
@@ -644,13 +679,30 @@ function StandardDashboard({ user, logout, hemograma, loading, error }: SubProps
 
             <div className="card card-base">
               <h2>Próxima consulta</h2>
-              <p>
-                Sua solicitação foi registrada na agenda padrão. Previsão atual de atendimento:{' '}
-                <strong>14 a 28 dias</strong>.
-              </p>
-              <button type="button" className="btn-secondary">
-                Confirmar fila padrão
-              </button>
+              {proximaConsulta ? (
+                <>
+                  <p>
+                    <strong>{proximaConsulta.hospitalName}</strong>
+                    {proximaConsulta.hospitalType ? ` · ${proximaConsulta.hospitalType}` : ''}
+                  </p>
+                  <p className="muted">
+                    Agendada para <strong>{formatScheduleDate(proximaConsulta.scheduledAt)}</strong>
+                  </p>
+                  <button type="button" className="btn-secondary">
+                    Confirmar presença
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p>
+                    Sua solicitação foi registrada na agenda padrão. Previsão atual de atendimento:{' '}
+                    <strong>14 a 28 dias</strong>.
+                  </p>
+                  <button type="button" className="btn-secondary">
+                    Confirmar fila padrão
+                  </button>
+                </>
+              )}
             </div>
           </div>
 

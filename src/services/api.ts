@@ -1,9 +1,11 @@
 import axios, { AxiosError } from 'axios'
 import type { ApiErrorResponse } from '@/types'
 
-const baseURL =
+const rawBaseURL =
   import.meta.env.VITE_API_URL ??
-  'https://stark-cliffs-43839-e9065399f0e4.herokuapp.com/'
+  'https://stark-cliffs-43839-e9065399f0e4.herokuapp.com'
+
+const baseURL = rawBaseURL.replace(/\/+$/, '')
 
 export const api = axios.create({
   baseURL,

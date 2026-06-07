@@ -2,28 +2,32 @@ import { api } from './api'
 import type {
   CreateCustomerPayload,
   Customer,
+  CustomerCreateResponse,
   Page,
 } from '@/types'
 
 /** Modo offline para testar o front sem o back (VITE_USE_MOCK=true) */
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
-function mockCustomer(payload: CreateCustomerPayload): Customer {
+function mockCreateResponse(payload: CreateCustomerPayload): CustomerCreateResponse {
   return {
     id: Math.floor(1000 + Math.random() * 9000),
     name: payload.name,
     email: payload.email,
     customerClass: payload.customerClass,
     address: { id: 1, ...payload.address },
+    autoSchedule: null,
   }
 }
 
-export async function createCustomer(payload: CreateCustomerPayload): Promise<Customer> {
+export async function createCustomer(
+  payload: CreateCustomerPayload,
+): Promise<CustomerCreateResponse> {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400))
-    return mockCustomer(payload)
+    return mockCreateResponse(payload)
   }
-  const { data } = await api.post<Customer>('/customer', payload)
+  const { data } = await api.post<CustomerCreateResponse>('/customer', payload)
   return data
 }
 

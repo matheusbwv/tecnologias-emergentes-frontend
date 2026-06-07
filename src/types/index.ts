@@ -120,6 +120,29 @@ export type ScheduleReportRow = {
   hospital: string
 }
 
+export type AutoScheduleResponse = {
+  scheduleId: number
+  serviceCode: number
+  scheduledAt: string
+  customerId: number
+  customerName: string
+  customerClass: CustomerClassBack
+  customerAddress: Address | null
+  hospitalId: number
+  hospitalName: string
+  hospitalType: string
+  hospitalAddress: Address | null
+}
+
+export type CustomerCreateResponse = {
+  id: number
+  name: string
+  email: string
+  customerClass: CustomerClassBack
+  address: Address
+  autoSchedule: AutoScheduleResponse | null
+}
+
 export type Page<T> = {
   content: T[]
   number: number

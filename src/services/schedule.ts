@@ -1,5 +1,6 @@
 import { api } from './api'
 import type {
+  AutoScheduleResponse,
   CreateSchedulePayload,
   Page,
   Schedule,
@@ -25,5 +26,14 @@ export async function getSchedulesReport(
   const { data } = await api.get<Page<ScheduleReportRow>>('/schedule/reports', {
     params: { page, size },
   })
+  return data
+}
+
+export async function getLatestScheduleForCustomer(
+  customerId: number,
+): Promise<AutoScheduleResponse> {
+  const { data } = await api.get<AutoScheduleResponse>(
+    `/schedule/customer/${customerId}/latest`,
+  )
   return data
 }

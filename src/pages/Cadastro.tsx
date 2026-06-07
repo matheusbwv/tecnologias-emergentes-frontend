@@ -36,7 +36,7 @@ export function Cadastro() {
     const numeroNum = Number.parseInt(numero, 10) || 0
 
     try {
-      const customer = await createCustomer({
+      const created = await createCustomer({
         name: nome,
         email,
         customerClass: mapToBackendClass(userClass),
@@ -51,7 +51,7 @@ export function Cadastro() {
 
       setUser({
         id: crypto.randomUUID(),
-        customerId: customer.id,
+        customerId: created.id,
         nome,
         email,
         profissao,
