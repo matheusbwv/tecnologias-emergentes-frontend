@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import { getNormalExamsReport, listExams } from '@/services/exam'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { listExams } from '@/services/exam'
 import { ApiRequestError } from '@/services/api'
 import type { Exam, ExamReportRow, Page } from '@/types'
 
@@ -9,48 +9,48 @@ function formatDateTime(iso: string) {
 
 export function Exames() {
   const [exams, setExams] = useState<Page<Exam> | null>(null)
-  const [report, setReport] = useState<Page<ExamReportRow> | null>(null)
   const [loading, setLoading] = useState(false)
-  const [examsError, setExamsError] = useState<string | null>(null)
-  const [reportError, setReportError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
-    setExamsError(null)
-    setReportError(null)
-
-    // allSettled: uma seção que falha não derruba a outra.
-    const [examsResult, reportResult] = await Promise.allSettled([
-      listExams(0, 15),
-      getNormalExamsReport(0, 15),
-    ])
-
-    if (examsResult.status === 'fulfilled') {
-      setExams(examsResult.value)
-    } else {
+    setError(null)
+    try {
+      // Buscamos uma página ampla para montar o relatório no próprio front.
+      const data = await listExams(0, 100)
+      setExams(data)
+    } catch (err) {
       setExams(null)
-      setExamsError(
-        examsResult.reason instanceof ApiRequestError
-          ? examsResult.reason.message
+      setError(
+        err instanceof ApiRequestError
+          ? err.message
           : 'Não foi possível carregar os exames.',
       )
+    } finally {
+      setLoading(false)
     }
-
-    if (reportResult.status === 'fulfilled') {
-      setReport(reportResult.value)
-    } else {
-      // O relatório é secundário: se estiver indisponível, mostramos um aviso
-      // discreto em vez de quebrar a página.
-      setReport(null)
-      setReportError('Relatório indisponível no momento.')
-    }
-
-    setLoading(false)
   }, [])
 
   useEffect(() => {
     load()
   }, [load])
+
+  // Relatório de hemogramas normais derivado da própria lista de exames
+  // (isAbnormal = false), em vez de depender de um endpoint de relatório.
+  const normalReport = useMemo<ExamReportRow[]>(() => {
+    if (!exams) return []
+    return exams.content
+      .filter((e) => !e.isAbnormal)
+      .map((e) => ({
+        patient: e.customer?.name ?? `#${e.customer?.id ?? '—'}`,
+        testType: e.type,
+        orderDate: e.orderDate,
+        hemoglobinResult:
+          e.examData?.erythrogram?.hemoglobin?.value != null
+            ? `${e.examData.erythrogram.hemoglobin.value} ${e.examData.erythrogram.hemoglobin.unit ?? ''}`.trim()
+            : '—',
+      }))
+  }, [exams])
 
   return (
     <section className="page">
@@ -60,18 +60,19 @@ export function Exames() {
         dentro da faixa de referência.
       </p>
 
+      {error && (
+        <p role="alert" className="form-error">
+          {error}
+        </p>
+      )}
+
       <div className="card">
         <h2>Todos os exames</h2>
         {loading && <p className="muted">Carregando...</p>}
-        {!loading && examsError && (
-          <p role="alert" className="form-error">
-            {examsError}
-          </p>
-        )}
-        {!loading && !examsError && exams && exams.empty && (
+        {!loading && !error && exams && exams.empty && (
           <p className="muted">Nenhum exame realizado ainda.</p>
         )}
-        {!loading && !examsError && exams && !exams.empty && (
+        {!loading && !error && exams && !exams.empty && (
           <table className="data-table">
             <thead>
               <tr>
@@ -106,13 +107,12 @@ export function Exames() {
       <div className="card">
         <h2>Relatório de hemogramas normais</h2>
         {loading && <p className="muted">Carregando...</p>}
-        {!loading && reportError && <p className="muted">{reportError}</p>}
-        {!loading && !reportError && report && report.empty && (
+        {!loading && !error && normalReport.length === 0 && (
           <p className="muted">
             Nenhum hemograma dentro da faixa de referência por enquanto.
           </p>
         )}
-        {!loading && !reportError && report && !report.empty && (
+        {!loading && !error && normalReport.length > 0 && (
           <table className="data-table">
             <thead>
               <tr>
@@ -123,7 +123,7 @@ export function Exames() {
               </tr>
             </thead>
             <tbody>
-              {report.content.map((row, i) => (
+              {normalReport.map((row, i) => (
                 <tr key={`${row.patient}-${i}`}>
                   <td>{row.patient}</td>
                   <td>{row.testType}</td>

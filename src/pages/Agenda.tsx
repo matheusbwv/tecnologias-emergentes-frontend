@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import {
-  createSchedule,
-  getSchedulesReport,
-  listSchedules,
-} from '@/services/schedule'
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from 'react'
+import { createSchedule, listSchedules } from '@/services/schedule'
 import { listCustomers } from '@/services/customer'
 import { listHospitals } from '@/services/hospital'
 import { ApiRequestError } from '@/services/api'
@@ -21,14 +23,12 @@ function formatDateTime(iso: string) {
 
 export function Agenda() {
   const [schedules, setSchedules] = useState<Page<Schedule> | null>(null)
-  const [report, setReport] = useState<Page<ScheduleReportRow> | null>(null)
   const [customers, setCustomers] = useState<Customer[]>([])
   const [hospitals, setHospitals] = useState<Hospital[]>([])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [schedulesError, setSchedulesError] = useState<string | null>(null)
-  const [reportError, setReportError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const [serviceCode, setServiceCode] = useState('1001')
@@ -40,14 +40,12 @@ export function Agenda() {
     setLoading(true)
     setError(null)
     setSchedulesError(null)
-    setReportError(null)
 
-    // allSettled: cada bloco da tela carrega de forma independente. Assim, um
-    // relatório indisponível não impede ver os agendamentos nem usar o formulário.
-    const [schedulesResult, reportResult, customersResult, hospitalsResult] =
+    // allSettled: cada bloco da tela carrega de forma independente. Assim, uma
+    // lista que falhe não impede ver as outras nem usar o formulário.
+    const [schedulesResult, customersResult, hospitalsResult] =
       await Promise.allSettled([
-        listSchedules(0, 10),
-        getSchedulesReport(0, 10),
+        listSchedules(0, 100),
         listCustomers(0, 50),
         listHospitals(0, 50),
       ])
@@ -61,13 +59,6 @@ export function Agenda() {
           ? schedulesResult.reason.message
           : 'Não foi possível carregar os agendamentos.',
       )
-    }
-
-    if (reportResult.status === 'fulfilled') {
-      setReport(reportResult.value)
-    } else {
-      setReport(null)
-      setReportError('Relatório indisponível no momento.')
     }
 
     if (customersResult.status === 'fulfilled') {
@@ -86,6 +77,22 @@ export function Agenda() {
 
     setLoading(false)
   }, [customerId, hospitalId])
+
+  // Relatório unificado derivado da própria lista de agendamentos (ordenado por
+  // data desc), em vez de depender de um endpoint de relatório.
+  const report = useMemo<ScheduleReportRow[]>(() => {
+    if (!schedules) return []
+    return [...schedules.content]
+      .sort(
+        (a, b) =>
+          new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
+      )
+      .map((s) => ({
+        scheduledAt: s.scheduledAt,
+        patient: s.customer?.name ?? `#${s.customer?.id ?? '—'}`,
+        hospital: s.hospital?.categoryName ?? `#${s.hospital?.id ?? '—'}`,
+      }))
+  }, [schedules])
 
   useEffect(() => {
     loadAll()
@@ -232,11 +239,10 @@ export function Agenda() {
       <div className="card">
         <h2>Relatório unificado (ordenado por data)</h2>
         {loading && <p className="muted">Carregando...</p>}
-        {!loading && reportError && <p className="muted">{reportError}</p>}
-        {!loading && !reportError && report && report.empty && (
+        {!loading && report.length === 0 && (
           <p className="muted">Nenhum agendamento para exibir no relatório.</p>
         )}
-        {!loading && !reportError && report && !report.empty && (
+        {!loading && report.length > 0 && (
           <table className="data-table">
             <thead>
               <tr>
@@ -246,7 +252,7 @@ export function Agenda() {
               </tr>
             </thead>
             <tbody>
-              {report.content.map((row, i) => (
+              {report.map((row, i) => (
                 <tr key={`${row.scheduledAt}-${i}`}>
                   <td>{formatDateTime(row.scheduledAt)}</td>
                   <td>{row.patient}</td>
