@@ -15,6 +15,7 @@ import { useLatestSchedule } from '@/hooks/useLatestSchedule'
 import { temAcessoIA, rotuloClasse } from '@/services/userClass'
 import { PriorityBadge } from '@/components/PriorityBadge'
 import { GoogleAd } from '@/components/GoogleAd'
+import { PopupAd } from '@/components/PopupAd'
 import humanoidImg from '@/assets/humanoid.png'
 import type { AutoScheduleResponse, HemogramResponseDTO, User } from '@/types'
 
@@ -561,7 +562,7 @@ function StandardDashboard({ user, logout, hemograma, loading, error, proximaCon
         <GoogleAd
           slot="1111111111"
           format="horizontal"
-          label="Anúncio · patrocinado pelo Google"
+          label="Anúncio"
           className="ad-slot-banner"
         />
 
@@ -674,6 +675,9 @@ function StandardDashboard({ user, logout, hemograma, loading, error, proximaCon
           </aside>
         </div>
       </div>
+
+      {/* Popup de anúncio a cada 10s (exclusivo do plano básico) */}
+      <PopupAd />
     </section>
   )
 }
