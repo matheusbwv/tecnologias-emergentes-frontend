@@ -6020,6 +6020,77 @@ button:disabled {
   min-height: 280px;
 }
 
+/* ===== Anúncio fictício (modo de teste) ===== */
+.ad-mock {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--clinic-line, #e3e6ec);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ad-mock:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(20, 30, 50, 0.12);
+}
+
+.ad-mock-img {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #eef1f6, #dfe4ec);
+}
+
+.ad-mock-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.7rem 0.85rem 0.85rem;
+}
+
+.ad-mock-advertiser {
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-mute, #7a8190);
+  font-weight: 600;
+}
+
+.ad-mock-headline {
+  font-size: 0.95rem;
+  line-height: 1.3;
+  color: var(--clinic-ink, #1c2533);
+  font-weight: 600;
+}
+
+.ad-mock-cta {
+  align-self: flex-start;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--clinic-accent, #2f6df6);
+  padding: 0.38rem 0.85rem;
+  border-radius: 999px;
+}
+
+/* Alturas de imagem por variante de slot */
+.ad-slot-banner .ad-mock-img {
+  height: 120px;
+}
+
+.ad-slot-infeed .ad-mock-img {
+  height: 190px;
+}
+
+.ad-slot-rail .ad-mock-img {
+  height: 170px;
+}
+
 @media (max-width: 960px) {
   .standard-grid {
     grid-template-columns: 1fr;

@@ -119,7 +119,12 @@ function ChartTooltip({
 export function Dashboard() {
   const { user, logout } = useUser()
   const { data: hemograma, loading, error } = useHemogram(user?.customerId)
-  const { data: proximaConsulta } = useLatestSchedule(user?.customerId)
+  // Auto-agendamento só existe para PREMIUM. Para STANDARD nem tentamos buscar
+  // (o endpoint retornaria 404 — "pobre não agenda automático").
+  const isPremium = user ? temAcessoIA(user.userClass) : false
+  const { data: proximaConsulta } = useLatestSchedule(
+    isPremium ? user?.customerId : null,
+  )
 
   if (!user) return <Navigate to="/cadastro" replace />
 
