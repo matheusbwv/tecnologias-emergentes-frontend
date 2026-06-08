@@ -5686,7 +5686,9 @@ button:disabled {
 }
 
 .ind-row strong {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.96rem;
+  color: #ffffff;
 }
 
 .ind-bar {
