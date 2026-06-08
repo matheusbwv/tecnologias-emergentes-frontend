@@ -6099,16 +6099,16 @@ button:disabled {
   box-shadow: 0 12px 26px rgba(20, 30, 50, 0.18);
 }
 
-/* Monograma grande e translúcido, como marca d'água da "imagem". */
-.promo-monogram {
+/* Ícone temático grande, como a "imagem" do anúncio. */
+.promo-icon {
   position: absolute;
-  top: -0.35em;
-  right: 0.1em;
-  z-index: 0;
-  font-size: 8rem;
-  font-weight: 800;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  z-index: 1;
+  font-size: 3.6rem;
   line-height: 1;
-  color: rgba(255, 255, 255, 0.22);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.28));
   pointer-events: none;
   user-select: none;
 }
@@ -6146,18 +6146,6 @@ button:disabled {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
-.promo-cta {
-  align-self: flex-start;
-  margin-top: 0.45rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #1c2533;
-  background: #fff;
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-}
-
 /* Alturas por variante de slot (a classe de variante vem no className) */
 .ad-slot-banner .promo-card {
   min-height: 130px;
@@ -6169,6 +6157,12 @@ button:disabled {
 
 .ad-slot-rail .promo-card {
   min-height: 250px;
+}
+
+/* Ícone maior nos slots mais altos */
+.ad-slot-infeed .promo-icon,
+.ad-slot-rail .promo-icon {
+  font-size: 4.4rem;
 }
 
 @media (max-width: 960px) {

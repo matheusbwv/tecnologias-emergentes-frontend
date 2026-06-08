@@ -15,7 +15,7 @@ const CLIENT = import.meta.env.VITE_ADSENSE_CLIENT ?? ''
 
 /**
  * Modo de teste: enquanto o domínio não está aprovado no AdSense, renderizamos
- * anúncios fictícios (com arte aleatória) no lugar do slot real. Assim o plano
+ * anúncios fictícios (com arte temática) no lugar do slot real. Assim o plano
  * básico continua mostrando publicidade mesmo sem o AdSense ativo.
  */
 const TEST_MODE = import.meta.env.VITE_ADSENSE_TEST === 'true'
@@ -31,30 +31,28 @@ type Props = {
   style?: CSSProperties
 }
 
-/** Criativos fictícios usados no modo de teste. */
-const MOCK_ADS = [
-  { advertiser: 'VitaLab Diagnósticos', headline: 'Check-up completo a partir de R$ 99', cta: 'Agendar agora' },
-  { advertiser: 'FarmaPlus', headline: 'Vitaminas e suplementos com 40% OFF', cta: 'Comprar' },
-  { advertiser: 'Clínica Bem-Estar', headline: 'Consulta com nutricionista sem custo', cta: 'Quero participar' },
-  { advertiser: 'MoveFit Academia', headline: 'Primeiro mês de treino por R$ 1', cta: 'Matricular' },
-  { advertiser: 'Seguro Vida+', headline: 'Proteja sua família por R$ 29/mês', cta: 'Simular plano' },
-  { advertiser: 'TeleMed 24h', headline: 'Médico online quando você precisar', cta: 'Falar com médico' },
-  { advertiser: 'NutriBox', headline: 'Marmitas fit entregues na sua casa', cta: 'Experimentar' },
-  { advertiser: 'Óticas Visão', headline: 'Óculos de grau: leve 2, pague 1', cta: 'Ver ofertas' },
-  { advertiser: 'SoroVida Hidratação', headline: 'Soroterapia premium com 25% OFF', cta: 'Agendar' },
-  { advertiser: 'DermaCare', headline: 'Avaliação de pele gratuita esta semana', cta: 'Marcar avaliação' },
-]
+/**
+ * Criativos fictícios usados no modo de teste. Cada um traz um ícone e uma
+ * paleta que combinam com o que está sendo anunciado ("imagem conforme o texto").
+ */
+type MockAd = {
+  advertiser: string
+  headline: string
+  icon: string
+  palette: [string, string]
+}
 
-/** Paletas de cor para a arte aleatória dos anúncios fictícios. */
-const PALETTES: Array<[string, string]> = [
-  ['#6366f1', '#8b5cf6'],
-  ['#0ea5e9', '#22d3ee'],
-  ['#10b981', '#34d399'],
-  ['#f59e0b', '#fb923c'],
-  ['#ef4444', '#f87171'],
-  ['#ec4899', '#f472b6'],
-  ['#14b8a6', '#2dd4bf'],
-  ['#3b82f6', '#60a5fa'],
+const MOCK_ADS: MockAd[] = [
+  { advertiser: 'VitaLab Diagnósticos', headline: 'Check-up completo a partir de R$ 99', icon: '🔬', palette: ['#0ea5e9', '#22d3ee'] },
+  { advertiser: 'FarmaPlus', headline: 'Vitaminas e suplementos com 40% OFF', icon: '💊', palette: ['#14b8a6', '#2dd4bf'] },
+  { advertiser: 'Clínica Bem-Estar', headline: 'Consulta com nutricionista sem custo', icon: '🥗', palette: ['#10b981', '#34d399'] },
+  { advertiser: 'MoveFit Academia', headline: 'Primeiro mês de treino por R$ 1', icon: '🏋️', palette: ['#6366f1', '#8b5cf6'] },
+  { advertiser: 'Seguro Vida+', headline: 'Proteja sua família por R$ 29/mês', icon: '🛡️', palette: ['#3b82f6', '#60a5fa'] },
+  { advertiser: 'TeleMed 24h', headline: 'Médico online quando você precisar', icon: '📱', palette: ['#0284c7', '#38bdf8'] },
+  { advertiser: 'NutriBox', headline: 'Marmitas fit entregues na sua casa', icon: '🍱', palette: ['#f59e0b', '#fb923c'] },
+  { advertiser: 'Óticas Visão', headline: 'Óculos de grau: leve 2, pague 1', icon: '👓', palette: ['#8b5cf6', '#a855f7'] },
+  { advertiser: 'SoroVida Hidratação', headline: 'Soroterapia premium com 25% OFF', icon: '💧', palette: ['#06b6d4', '#22d3ee'] },
+  { advertiser: 'DermaCare', headline: 'Avaliação de pele gratuita esta semana', icon: '✨', palette: ['#ec4899', '#f472b6'] },
 ]
 
 /** Gerador pseudo-aleatório determinístico (LCG) a partir de uma semente. */
@@ -65,23 +63,23 @@ function makeRng(seed: number) {
 }
 
 /**
- * Monta um `background` CSS aleatório (gradiente + "blobs" de luz) determinístico
- * pela semente. É 100% local: não depende de rede, então nunca quebra.
+ * Monta um `background` CSS (gradiente da paleta do anúncio + "blobs" de luz
+ * posicionados pela semente). É 100% local: não depende de rede, nunca quebra.
  */
-function randomArtBackground(seed: number): string {
-  const [c1, c2] = PALETTES[seed % PALETTES.length]
+function artBackground(seed: number, palette: [string, string]): string {
+  const [c1, c2] = palette
   const rand = makeRng(seed + 11)
   const blob = (op: number) =>
     `radial-gradient(circle at ${Math.round(rand() * 100)}% ${Math.round(
       rand() * 100,
     )}%, rgba(255,255,255,${op}) 0, transparent ${35 + Math.round(rand() * 20)}%)`
-  return `${blob(0.28)}, ${blob(0.2)}, ${blob(0.16)}, linear-gradient(135deg, ${c1}, ${c2})`
+  return `${blob(0.26)}, ${blob(0.18)}, ${blob(0.14)}, linear-gradient(135deg, ${c1}, ${c2})`
 }
 
 /**
  * Slot de Google AdSense. O script global é carregado uma única vez em main.tsx
  * quando `VITE_ADSENSE_CLIENT` está definido. Em modo de teste, mostra um
- * anúncio fictício com arte aleatória gerada localmente.
+ * anúncio fictício com arte temática gerada localmente.
  */
 export function GoogleAd({
   slot,
@@ -108,27 +106,25 @@ export function GoogleAd({
     }
   }, [])
 
-  // Anúncio fictício com arte aleatória (modo de teste / domínio não aprovado).
-  // Usamos classes neutras ("promo-*", sem "ad") e <div> em vez de <a> para que
-  // bloqueadores de anúncio não escondam o card.
+  // Anúncio fictício com arte temática. Classes neutras ("promo-*", sem "ad")
+  // e <div> em vez de <a> para que bloqueadores de anúncio não escondam o card.
   if (TEST_MODE) {
     return (
       <aside className={`promo-slot ${className ?? ''}`} style={style}>
         <span className="promo-slot-label">{label}</span>
         <div
           className="promo-card"
-          style={{ background: randomArtBackground(seed) }}
+          style={{ background: artBackground(seed, ad.palette) }}
           role="img"
           aria-label={`${ad.advertiser}: ${ad.headline}`}
         >
-          <span className="promo-monogram" aria-hidden>
-            {ad.advertiser.charAt(0)}
+          <span className="promo-icon" aria-hidden>
+            {ad.icon}
           </span>
           <span className="promo-scrim" aria-hidden />
           <span className="promo-body">
             <span className="promo-advertiser">{ad.advertiser}</span>
             <strong className="promo-headline">{ad.headline}</strong>
-            <span className="promo-cta">{ad.cta}</span>
           </span>
         </div>
       </aside>
