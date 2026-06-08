@@ -6057,9 +6057,29 @@ button:disabled {
 }
 
 /* ===== Anúncio fictício (modo de teste) ===== */
-/* Arte aleatória 100% local (gradiente CSS) com o texto sobreposto. Nunca
+/* Classes neutras (promo-*) para que bloqueadores de anúncio não escondam.
+   Arte aleatória 100% local (gradiente CSS) com o texto sobreposto: nunca
    depende de rede, então a imagem nunca "quebra". */
-.ad-mock {
+.promo-slot {
+  display: block;
+  border: 1px solid var(--clinic-line, #e3e6ec);
+  border-radius: var(--radius, 12px);
+  background: #ffffff;
+  padding: 0.65rem 0.85rem 0.85rem;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(20, 30, 50, 0.08));
+}
+
+.promo-slot-label {
+  display: block;
+  font-family: var(--mono, monospace);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mute, #7a8190);
+  margin-bottom: 0.55rem;
+}
+
+.promo-card {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -6074,13 +6094,13 @@ button:disabled {
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.ad-mock:hover {
+.promo-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 26px rgba(20, 30, 50, 0.18);
 }
 
 /* Monograma grande e translúcido, como marca d'água da "imagem". */
-.ad-mock-monogram {
+.promo-monogram {
   position: absolute;
   top: -0.35em;
   right: 0.1em;
@@ -6094,7 +6114,7 @@ button:disabled {
 }
 
 /* Escurece a base para o texto ficar sempre legível sobre a arte. */
-.ad-mock-scrim {
+.promo-scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -6102,7 +6122,7 @@ button:disabled {
   pointer-events: none;
 }
 
-.ad-mock-body {
+.promo-body {
   position: relative;
   z-index: 2;
   display: flex;
@@ -6110,7 +6130,7 @@ button:disabled {
   gap: 0.3rem;
 }
 
-.ad-mock-advertiser {
+.promo-advertiser {
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -6118,7 +6138,7 @@ button:disabled {
   font-weight: 700;
 }
 
-.ad-mock-headline {
+.promo-headline {
   font-size: 1rem;
   line-height: 1.3;
   color: #fff;
@@ -6126,7 +6146,7 @@ button:disabled {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
-.ad-mock-cta {
+.promo-cta {
   align-self: flex-start;
   margin-top: 0.45rem;
   font-size: 0.78rem;
@@ -6138,16 +6158,16 @@ button:disabled {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
-/* Alturas por variante de slot */
-.ad-slot-banner .ad-mock {
+/* Alturas por variante de slot (a classe de variante vem no className) */
+.ad-slot-banner .promo-card {
   min-height: 130px;
 }
 
-.ad-slot-infeed .ad-mock {
+.ad-slot-infeed .promo-card {
   min-height: 220px;
 }
 
-.ad-slot-rail .ad-mock {
+.ad-slot-rail .promo-card {
   min-height: 250px;
 }
 
@@ -6160,7 +6180,8 @@ button:disabled {
     flex-direction: row;
     flex-wrap: wrap;
   }
-  .standard-sidebar > .ad-slot {
+  .standard-sidebar > .ad-slot,
+  .standard-sidebar > .promo-slot {
     flex: 1 1 280px;
   }
 }

@@ -109,27 +109,28 @@ export function GoogleAd({
   }, [])
 
   // Anúncio fictício com arte aleatória (modo de teste / domínio não aprovado).
+  // Usamos classes neutras ("promo-*", sem "ad") e <div> em vez de <a> para que
+  // bloqueadores de anúncio não escondam o card.
   if (TEST_MODE) {
     return (
-      <aside className={`ad-slot ad-slot-mock ${className ?? ''}`} style={style}>
-        <span className="ad-slot-label">{label}</span>
-        <a
-          className="ad-mock"
-          href="#"
-          onClick={(e) => e.preventDefault()}
+      <aside className={`promo-slot ${className ?? ''}`} style={style}>
+        <span className="promo-slot-label">{label}</span>
+        <div
+          className="promo-card"
           style={{ background: randomArtBackground(seed) }}
+          role="img"
           aria-label={`${ad.advertiser}: ${ad.headline}`}
         >
-          <span className="ad-mock-monogram" aria-hidden>
+          <span className="promo-monogram" aria-hidden>
             {ad.advertiser.charAt(0)}
           </span>
-          <span className="ad-mock-scrim" aria-hidden />
-          <span className="ad-mock-body">
-            <span className="ad-mock-advertiser">{ad.advertiser}</span>
-            <strong className="ad-mock-headline">{ad.headline}</strong>
-            <span className="ad-mock-cta">{ad.cta}</span>
+          <span className="promo-scrim" aria-hidden />
+          <span className="promo-body">
+            <span className="promo-advertiser">{ad.advertiser}</span>
+            <strong className="promo-headline">{ad.headline}</strong>
+            <span className="promo-cta">{ad.cta}</span>
           </span>
-        </a>
+        </div>
       </aside>
     )
   }
