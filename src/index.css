@@ -5723,6 +5723,40 @@ button:disabled {
   text-shadow: 0 0 10px rgba(224, 189, 91, 0.25);
 }
 
+/* ---- Consulta prioritária (callout em destaque) ---- */
+.appointment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 1px solid rgba(224, 189, 91, 0.45);
+  background: linear-gradient(
+    135deg,
+    rgba(224, 189, 91, 0.16),
+    rgba(224, 189, 91, 0.04)
+  );
+}
+
+.appointment-eyebrow {
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--d-gold);
+  font-weight: 700;
+}
+
+.appointment-hospital {
+  font-size: 1.45rem;
+  line-height: 1.2;
+  color: #fff;
+  font-weight: 800;
+}
+
+.appointment-date {
+  font-size: 1.05rem;
+  color: var(--d-text-mute);
+  font-weight: 500;
+}
+
 /* ---- AI Smart Report ---- */
 .panel-ai {
   display: flex;

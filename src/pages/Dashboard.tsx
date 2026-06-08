@@ -3,10 +3,7 @@ import { Navigate } from 'react-router-dom'
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -188,7 +185,6 @@ function PremiumDashboard({ user, logout, hemograma, loading, error, proximaCons
     const rbc = generateHistory(seed + 2, ed.erythrogram.rbc.value, 12)
     const wbc = generateHistory(seed + 3, ed.leukogram.wbc_total.value, 12)
     const plt = generateHistory(seed + 4, ed.platelets.count, 12)
-    const week = generateHistory(seed + 5, 82, 7)
     return {
       hb,
       rbc,
@@ -198,10 +194,6 @@ function PremiumDashboard({ user, logout, hemograma, loading, error, proximaCons
         mes,
         Hemoglobina: Number(hb[i].toFixed(2)),
         Hemácias: Number(rbc[i].toFixed(2)),
-      })),
-      week: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map((dia, i) => ({
-        dia,
-        adesao: Math.round(week[i]),
       })),
     }
   }, [hemograma])
@@ -389,10 +381,6 @@ function PremiumDashboard({ user, logout, hemograma, loading, error, proximaCons
                     </li>
                   ))}
                 </ul>
-                <div className="ind-score">
-                  <span>Score clínico geral</span>
-                  <strong>A+</strong>
-                </div>
               </section>
             </div>
 
@@ -494,60 +482,19 @@ function PremiumDashboard({ user, logout, hemograma, loading, error, proximaCons
                 ) : (
                   <p className="muted" style={{ fontSize: '0.86rem' }}>Laudo sendo gerado…</p>
                 )}
-                {proximaConsulta && (
-                  <p
-                    className="muted"
-                    style={{ fontSize: '0.78rem', marginTop: '0.55rem' }}
-                  >
-                    Consulta prioritária agendada em{' '}
-                    <strong>{proximaConsulta.hospitalName}</strong> · {formatScheduleDate(proximaConsulta.scheduledAt)}
-                  </p>
-                )}
-                <button type="button" className="btn-gold ai-side-btn" style={{ padding: '0.65rem 1.2rem', fontSize: '0.86rem' }}>
-                  {proximaConsulta ? 'Ver detalhes da consulta' : 'Agendar consulta prioritária'}
-                </button>
               </section>
 
-              <section className="panel">
-                <header className="panel-head">
-                  <div>
-                    <h2>Adesão semanal</h2>
-                    <p className="panel-sub">Engajamento ao plano</p>
-                  </div>
-                </header>
-                <div className="chart-wrap">
-                  <ResponsiveContainer width="100%" height={170}>
-                    <BarChart data={model.week} margin={{ top: 8, right: 4, bottom: 0, left: -22 }}>
-                      <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-                      <XAxis
-                        dataKey="dia"
-                        tick={{ fill: '#8a8c95', fontSize: 11 }}
-                        axisLine={false}
-                        tickLine={false}
-                        dy={6}
-                      />
-                      <YAxis
-                        tick={{ fill: '#8a8c95', fontSize: 11 }}
-                        axisLine={false}
-                        tickLine={false}
-                        width={30}
-                      />
-                      <Tooltip
-                        content={<ChartTooltip />}
-                        cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-                      />
-                      <Bar dataKey="adesao" radius={[5, 5, 0, 0]} animationDuration={900}>
-                        {model.week.map((d, i) => {
-                          const max = Math.max(...model.week.map((w) => w.adesao))
-                          return (
-                            <Cell key={i} fill={d.adesao === max ? C.gold : 'rgba(216,178,95,0.35)'} />
-                          )
-                        })}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </section>
+              {proximaConsulta && (
+                <section className="panel appointment-card">
+                  <span className="appointment-eyebrow">Consulta prioritária agendada</span>
+                  <strong className="appointment-hospital">
+                    {proximaConsulta.hospitalName}
+                  </strong>
+                  <span className="appointment-date">
+                    {formatScheduleDate(proximaConsulta.scheduledAt)}
+                  </span>
+                </section>
+              )}
             </div>
           </div>
         </>
