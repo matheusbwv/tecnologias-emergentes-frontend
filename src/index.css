@@ -6021,74 +6021,98 @@ button:disabled {
 }
 
 /* ===== Anúncio fictício (modo de teste) ===== */
+/* Arte aleatória 100% local (gradiente CSS) com o texto sobreposto. Nunca
+   depende de rede, então a imagem nunca "quebra". */
 .ad-mock {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  border: 1px solid var(--clinic-line, #e3e6ec);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 180px;
+  padding: 0.9rem 1rem;
   border-radius: 10px;
   overflow: hidden;
-  background: #fff;
+  text-decoration: none;
+  color: #fff;
+  isolation: isolate;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .ad-mock:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(20, 30, 50, 0.12);
+  box-shadow: 0 12px 26px rgba(20, 30, 50, 0.18);
 }
 
-.ad-mock-img {
-  display: block;
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  background: linear-gradient(135deg, #eef1f6, #dfe4ec);
+/* Monograma grande e translúcido, como marca d'água da "imagem". */
+.ad-mock-monogram {
+  position: absolute;
+  top: -0.35em;
+  right: 0.1em;
+  z-index: 0;
+  font-size: 8rem;
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Escurece a base para o texto ficar sempre legível sobre a arte. */
+.ad-mock-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, transparent 35%, rgba(15, 23, 42, 0.55) 100%);
+  pointer-events: none;
 }
 
 .ad-mock-body {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  padding: 0.7rem 0.85rem 0.85rem;
 }
 
 .ad-mock-advertiser {
   font-size: 0.68rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-mute, #7a8190);
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
 }
 
 .ad-mock-headline {
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.3;
-  color: var(--clinic-ink, #1c2533);
-  font-weight: 600;
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .ad-mock-cta {
   align-self: flex-start;
-  margin-top: 0.2rem;
+  margin-top: 0.45rem;
   font-size: 0.78rem;
-  font-weight: 600;
-  color: #fff;
-  background: var(--clinic-accent, #2f6df6);
-  padding: 0.38rem 0.85rem;
+  font-weight: 700;
+  color: #1c2533;
+  background: #fff;
+  padding: 0.4rem 0.9rem;
   border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
 }
 
-/* Alturas de imagem por variante de slot */
-.ad-slot-banner .ad-mock-img {
-  height: 120px;
+/* Alturas por variante de slot */
+.ad-slot-banner .ad-mock {
+  min-height: 130px;
 }
 
-.ad-slot-infeed .ad-mock-img {
-  height: 190px;
+.ad-slot-infeed .ad-mock {
+  min-height: 220px;
 }
 
-.ad-slot-rail .ad-mock-img {
-  height: 170px;
+.ad-slot-rail .ad-mock {
+  min-height: 250px;
 }
 
 @media (max-width: 960px) {

@@ -15,8 +15,8 @@ const CLIENT = import.meta.env.VITE_ADSENSE_CLIENT ?? ''
 
 /**
  * Modo de teste: enquanto o domínio não está aprovado no AdSense, renderizamos
- * anúncios fictícios (com imagens aleatórias) no lugar do slot real. Assim o
- * plano básico continua mostrando publicidade mesmo sem o AdSense ativo.
+ * anúncios fictícios (com arte aleatória) no lugar do slot real. Assim o plano
+ * básico continua mostrando publicidade mesmo sem o AdSense ativo.
  */
 const TEST_MODE = import.meta.env.VITE_ADSENSE_TEST === 'true'
 
@@ -45,26 +45,43 @@ const MOCK_ADS = [
   { advertiser: 'DermaCare', headline: 'Avaliação de pele gratuita esta semana', cta: 'Marcar avaliação' },
 ]
 
-/** Dimensões da imagem aleatória conforme o formato do slot. */
-function imageDimensions(format: string): [number, number] {
-  switch (format) {
-    case 'horizontal':
-      return [1200, 300]
-    case 'vertical':
-      return [320, 520]
-    case 'rectangle':
-      return [320, 250]
-    case 'fluid':
-      return [640, 380]
-    default:
-      return [600, 320]
-  }
+/** Paletas de cor para a arte aleatória dos anúncios fictícios. */
+const PALETTES: Array<[string, string]> = [
+  ['#6366f1', '#8b5cf6'],
+  ['#0ea5e9', '#22d3ee'],
+  ['#10b981', '#34d399'],
+  ['#f59e0b', '#fb923c'],
+  ['#ef4444', '#f87171'],
+  ['#ec4899', '#f472b6'],
+  ['#14b8a6', '#2dd4bf'],
+  ['#3b82f6', '#60a5fa'],
+]
+
+/** Gerador pseudo-aleatório determinístico (LCG) a partir de uma semente. */
+function makeRng(seed: number) {
+  let s = seed % 2147483647
+  if (s <= 0) s += 2147483646
+  return () => (s = (s * 16807) % 2147483647) / 2147483647
+}
+
+/**
+ * Monta um `background` CSS aleatório (gradiente + "blobs" de luz) determinístico
+ * pela semente. É 100% local: não depende de rede, então nunca quebra.
+ */
+function randomArtBackground(seed: number): string {
+  const [c1, c2] = PALETTES[seed % PALETTES.length]
+  const rand = makeRng(seed + 11)
+  const blob = (op: number) =>
+    `radial-gradient(circle at ${Math.round(rand() * 100)}% ${Math.round(
+      rand() * 100,
+    )}%, rgba(255,255,255,${op}) 0, transparent ${35 + Math.round(rand() * 20)}%)`
+  return `${blob(0.28)}, ${blob(0.2)}, ${blob(0.16)}, linear-gradient(135deg, ${c1}, ${c2})`
 }
 
 /**
  * Slot de Google AdSense. O script global é carregado uma única vez em main.tsx
  * quando `VITE_ADSENSE_CLIENT` está definido. Em modo de teste, mostra um
- * anúncio fictício com imagem aleatória.
+ * anúncio fictício com arte aleatória gerada localmente.
  */
 export function GoogleAd({
   slot,
@@ -75,7 +92,7 @@ export function GoogleAd({
 }: Props) {
   const pushed = useRef(false)
 
-  // Criativo e imagem aleatórios, estáveis durante a vida do componente
+  // Criativo e arte aleatórios, estáveis durante a vida do componente
   // (mas variam a cada carregamento da página).
   const [ad] = useState(() => MOCK_ADS[Math.floor(Math.random() * MOCK_ADS.length)])
   const [seed] = useState(() => Math.floor(Math.random() * 1_000_000))
@@ -91,10 +108,8 @@ export function GoogleAd({
     }
   }, [])
 
-  // Anúncio fictício com imagem aleatória (modo de teste / domínio não aprovado).
+  // Anúncio fictício com arte aleatória (modo de teste / domínio não aprovado).
   if (TEST_MODE) {
-    const [w, h] = imageDimensions(format)
-    const imageUrl = `https://picsum.photos/seed/atlas-${seed}/${w}/${h}`
     return (
       <aside className={`ad-slot ad-slot-mock ${className ?? ''}`} style={style}>
         <span className="ad-slot-label">{label}</span>
@@ -102,20 +117,18 @@ export function GoogleAd({
           className="ad-mock"
           href="#"
           onClick={(e) => e.preventDefault()}
+          style={{ background: randomArtBackground(seed) }}
           aria-label={`${ad.advertiser}: ${ad.headline}`}
         >
-          <img
-            className="ad-mock-img"
-            src={imageUrl}
-            alt=""
-            loading="lazy"
-            draggable={false}
-          />
-          <div className="ad-mock-body">
+          <span className="ad-mock-monogram" aria-hidden>
+            {ad.advertiser.charAt(0)}
+          </span>
+          <span className="ad-mock-scrim" aria-hidden />
+          <span className="ad-mock-body">
             <span className="ad-mock-advertiser">{ad.advertiser}</span>
             <strong className="ad-mock-headline">{ad.headline}</strong>
             <span className="ad-mock-cta">{ad.cta}</span>
-          </div>
+          </span>
         </a>
       </aside>
     )
