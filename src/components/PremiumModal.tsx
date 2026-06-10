@@ -128,7 +128,7 @@ export function PremiumModal({ open, onClose }: Props) {
             </a>
 
             <p className="premium-modal-loan">
-              Sem R$ 10.000 agora? 😅 Parcele em até <strong>360x</strong> — o QR
+              Sem R$ 10.000 agora? Parcele em até <strong>360x</strong> — o QR
               te leva direto ao crédito.
             </p>
 
