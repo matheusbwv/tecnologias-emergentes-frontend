@@ -544,6 +544,7 @@ function LockedCard({
 
 function StandardDashboard({ user, logout, hemograma, loading, error, proximaConsulta }: SubProps) {
   const [premiumOpen, setPremiumOpen] = useState(false)
+  const [filaConfirmada, setFilaConfirmada] = useState(false)
   const openPremium = () => setPremiumOpen(true)
 
   return (
@@ -659,13 +660,40 @@ function StandardDashboard({ user, logout, hemograma, loading, error, proximaCon
                     Confirmar presença
                   </button>
                 </>
+              ) : filaConfirmada ? (
+                <>
+                  <p className="queue-confirmed">
+                    <span className="queue-confirmed-check" aria-hidden>
+                      ✓
+                    </span>
+                    Fila padrão confirmada. Atendimento previsto em{' '}
+                    <strong>14 a 28 dias</strong>.
+                  </p>
+                  <div className="queue-upsell">
+                    <p>
+                      Cansado de esperar? Com o <strong>Atlas Premium</strong> você
+                      fura a fila e é atendido em até 24h.
+                    </p>
+                    <button
+                      type="button"
+                      className="queue-upsell-btn"
+                      onClick={openPremium}
+                    >
+                      Pular a fila com o Premium
+                    </button>
+                  </div>
+                </>
               ) : (
                 <>
                   <p>
                     Sua solicitação foi registrada na agenda padrão. Previsão atual de atendimento:{' '}
                     <strong>14 a 28 dias</strong>.
                   </p>
-                  <button type="button" className="btn-secondary">
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => setFilaConfirmada(true)}
+                  >
                     Confirmar fila padrão
                   </button>
                 </>
