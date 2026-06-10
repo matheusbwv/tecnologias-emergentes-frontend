@@ -6318,15 +6318,18 @@ button:disabled {
   margin-bottom: 0.9rem;
 }
 
-.premium-modal-title {
+/* Seletores com .premium-modal na frente para vencer regras de tema
+   (ex.: .theme-base h2) que deixariam o texto escuro dentro do dashboard. */
+.premium-modal .premium-modal-title {
+  font-family: var(--sans);
   font-size: 1.5rem;
   font-weight: 800;
-  color: #fff;
+  color: #ffffff;
   margin: 0 0 0.3rem;
 }
 
-.premium-modal-sub {
-  color: rgba(231, 235, 243, 0.7);
+.premium-modal .premium-modal-sub {
+  color: rgba(231, 235, 243, 0.72);
   font-size: 0.9rem;
   margin: 0 0 1.2rem;
 }
