@@ -16,6 +16,7 @@ import { temAcessoIA, rotuloClasse } from '@/services/userClass'
 import { PriorityBadge } from '@/components/PriorityBadge'
 import { GoogleAd } from '@/components/GoogleAd'
 import { PopupAd } from '@/components/PopupAd'
+import { PremiumModal } from '@/components/PremiumModal'
 import humanoidImg from '@/assets/humanoid.png'
 import type { AutoScheduleResponse, HemogramResponseDTO, User } from '@/types'
 
@@ -508,7 +509,15 @@ function PremiumDashboard({ user, logout, hemograma, loading, error, proximaCons
 /* Standard                                                            */
 /* ================================================================== */
 
-function LockedCard({ title, hint }: { title: string; hint: string }) {
+function LockedCard({
+  title,
+  hint,
+  onCta,
+}: {
+  title: string
+  hint: string
+  onCta: () => void
+}) {
   return (
     <div className="locked-card">
       <div className="locked-overlay">
@@ -520,7 +529,7 @@ function LockedCard({ title, hint }: { title: string; hint: string }) {
         </div>
         <h3>{title}</h3>
         <p>{hint}</p>
-        <button type="button" className="btn-secondary btn-sm">
+        <button type="button" className="btn-secondary btn-sm" onClick={onCta}>
           Conhecer Atlas Premium
         </button>
       </div>
@@ -534,6 +543,9 @@ function LockedCard({ title, hint }: { title: string; hint: string }) {
 }
 
 function StandardDashboard({ user, logout, hemograma, loading, error, proximaConsulta }: SubProps) {
+  const [premiumOpen, setPremiumOpen] = useState(false)
+  const openPremium = () => setPremiumOpen(true)
+
   return (
     <section className="page dashboard theme-base dashboard-standard dashboard-standard-wide">
       <div className="standard-shell">
@@ -624,10 +636,12 @@ function StandardDashboard({ user, logout, hemograma, loading, error, proximaCon
             <LockedCard
               title="Gráficos de evolução clínica"
               hint="Acompanhe a tendência dos seus exames ao longo do tempo no plano Premium."
+              onCta={openPremium}
             />
             <LockedCard
               title="Laudo por inteligência artificial"
               hint="Avaliação imediata do hemograma gerada pela Atlas IA está disponível no plano Premium."
+              onCta={openPremium}
             />
 
             <div className="card card-base">
@@ -678,6 +692,9 @@ function StandardDashboard({ user, logout, hemograma, loading, error, proximaCon
 
       {/* Popup de anúncio a cada 10s (exclusivo do plano básico) */}
       <PopupAd />
+
+      {/* Modal de apresentação do plano Premium */}
+      <PremiumModal open={premiumOpen} onClose={() => setPremiumOpen(false)} />
     </section>
   )
 }
