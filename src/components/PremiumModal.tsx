@@ -14,7 +14,8 @@ const FEATURES = [
 ]
 
 /** Para onde o QR aponta — um site de empréstimo (a piada do plano de R$ 10.000). */
-const LOAN_URL = 'https://www.google.com/search?q=empréstimo+pessoal+online+rápido'
+const LOAN_URL =
+  'https://www.caixa.gov.br/voce/credito-financiamento/emprestimo/emprestimo-pessoal/Paginas/default.aspx'
 
 const QR_SRC = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data=${encodeURIComponent(
   LOAN_URL,
