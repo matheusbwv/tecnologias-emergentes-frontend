@@ -6430,6 +6430,65 @@ button:disabled {
   margin: 0.8rem 0 0;
 }
 
+.premium-modal-amount {
+  color: #e9c870;
+  font-weight: 800;
+}
+
+/* Etapa de pagamento (QR) */
+.premium-modal-qr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 240px;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  margin: 0.4rem auto 1rem;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+}
+
+.premium-modal-qr img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.premium-modal-qr-fallback {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1c2533;
+  line-height: 1.4;
+}
+
+.premium-modal-loan {
+  text-align: center;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: rgba(231, 235, 243, 0.82);
+  margin: 0 0 1.1rem;
+}
+
+.premium-modal-loan strong {
+  color: #e9c870;
+}
+
+.premium-modal-cta-ghost {
+  background: transparent;
+  color: #e9c870;
+  border: 1px solid rgba(224, 189, 91, 0.5);
+  box-shadow: none;
+}
+
+.premium-modal-cta-ghost:hover {
+  background: rgba(224, 189, 91, 0.1);
+  filter: none;
+}
+
 @media (max-width: 960px) {
   .standard-grid {
     grid-template-columns: 1fr;
