@@ -43,6 +43,11 @@ export function Cadastro() {
     }
   }
 
+  function handleNome(raw: string) {
+    // Aceita apenas letras (com acento), espaços e os sinais comuns de nomes.
+    setNome(raw.replace(/[^\p{L}\s'.-]/gu, ''))
+  }
+
   function handleCep(raw: string) {
     const digits = raw.replace(/\D/g, '').slice(0, 8)
     setCep(digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits)
@@ -111,7 +116,7 @@ export function Cadastro() {
             type="text"
             required
             value={nome}
-            onChange={(e) => setNome(e.target.value)}
+            onChange={(e) => handleNome(e.target.value)}
           />
         </label>
 
