@@ -59,6 +59,14 @@ export function Cadastro() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setErro(null)
+
+    // E-mail precisa ter formato válido (nome@dominio.com).
+    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+    if (!emailValido) {
+      setErro('Informe um e-mail válido com "@" (ex.: nome@dominio.com).')
+      return
+    }
+
     setSubmitting(true)
 
     const rendaNum = Number.parseFloat(renda) || 0
