@@ -20,10 +20,35 @@ export function Cadastro() {
 
   const [submitting, setSubmitting] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+  const [cepLoading, setCepLoading] = useState(false)
+  const [cepErro, setCepErro] = useState<string | null>(null)
+
+  async function buscarCep(cepDigits: string) {
+    setCepLoading(true)
+    setCepErro(null)
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepDigits}/json/`)
+      const data = await res.json()
+      if (data.erro) {
+        setCepErro('CEP não encontrado. Preencha o endereço manualmente.')
+        return
+      }
+      if (data.logradouro) setRua(data.logradouro)
+      if (data.localidade) setCidade(data.localidade)
+    } catch {
+      // Sem conexão com o ViaCEP: o usuário ainda pode preencher manualmente.
+      setCepErro('Não foi possível buscar o CEP. Preencha o endereço manualmente.')
+    } finally {
+      setCepLoading(false)
+    }
+  }
 
   function handleCep(raw: string) {
     const digits = raw.replace(/\D/g, '').slice(0, 8)
     setCep(digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits)
+    setCepErro(null)
+    // Assim que o CEP fica completo (8 dígitos), busca rua e cidade.
+    if (digits.length === 8) buscarCep(digits)
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -119,7 +144,7 @@ export function Cadastro() {
           <input
             type="number"
             min="0"
-            step="100"
+            step="any"
             required
             value={renda}
             onChange={(e) => setRenda(e.target.value)}
@@ -127,7 +152,10 @@ export function Cadastro() {
         </label>
 
         <label className="field">
-          <span>CEP residencial</span>
+          <span>
+            CEP residencial
+            {cepLoading && <span className="field-hint"> · buscando endereço…</span>}
+          </span>
           <input
             type="text"
             required
@@ -138,6 +166,7 @@ export function Cadastro() {
             value={cep}
             onChange={(e) => handleCep(e.target.value)}
           />
+          {cepErro && <small className="field-error">{cepErro}</small>}
         </label>
 
         <label className="field">

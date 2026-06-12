@@ -1107,6 +1107,17 @@ button:disabled {
   border-color: var(--teal-bright);
 }
 
+.field-hint {
+  font-weight: 400;
+  color: var(--teal);
+  font-size: 0.85em;
+}
+
+.field-error {
+  color: #c0392b;
+  font-size: 0.82rem;
+}
+
 .field input:focus,
 .field select:focus {
   outline: none;
